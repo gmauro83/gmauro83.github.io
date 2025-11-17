@@ -26,27 +26,11 @@
         .link-item:hover .link-actions { opacity: 1; transform: scale(1); }
         .category-header .edit-category-btn { opacity: 0; transition: all 0.2s ease-in-out; }
         .category-header:hover .edit-category-btn { opacity: 1; }
-        
-        /* NUEVO: Ocultar el 'handle' de categoría hasta el hover para no ser tan invasivo */
         .category-header .category-drag-handle { opacity: 0; transition: all 0.2s ease-in-out; }
         .category-header:hover .category-drag-handle { opacity: 1; }
-
-        /* NUEVO: Estilo del handle de enlace (siempre visible en móvil, hover en desktop) */
-        .link-item .link-drag-handle { 
-            opacity: 0.2; /* Apenas visible */
-            transition: all 0.2s ease-in-out;
-        }
-        .link-item:hover .link-drag-handle {
-            opacity: 0.5; /* Más visible en hover */
-        }
-        /* Forzar visibilidad en pantallas táctiles (móviles) */
-        @media (pointer: coarse) {
-            .link-item .link-drag-handle {
-                opacity: 0.3;
-            }
-        }
-
-
+        .link-item .link-drag-handle { opacity: 0.2; transition: all 0.2s ease-in-out; }
+        .link-item:hover .link-drag-handle { opacity: 0.5; }
+        @media (pointer: coarse) { .link-item .link-drag-handle { opacity: 0.3; } }
         .sortable-ghost { opacity: 0.4; background: #e5e7eb; border: 2px dashed #6b7280; }
         .dark .sortable-ghost { background: #4a5568; }
         #undo-toast { transform: translateY(100%); transition: transform 0.3s ease-in-out; visibility: hidden; }
@@ -56,7 +40,6 @@
 <body class="bg-gray-100 text-gray-900 dark:bg-gradient-to-br dark:from-gray-950 dark:via-black dark:to-indigo-950 dark:text-gray-100 min-h-screen p-4 md:p-8 transition-colors duration-300">
 
     <div class="max-w-7xl mx-auto">
-
         <header class="mb-8">
             <div class="flex flex-col sm:flex-row justify-center items-center mb-6 gap-4 sm:gap-8">
                 <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700 dark:from-cyan-400 dark:to-fuchsia-500">Favoritos</h1>
@@ -115,7 +98,6 @@
             </form>
         </div>
     </div>
-
     <div id="link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50">
         <div class="bg-white dark:bg-gray-800/90 dark:border dark:border-gray-700 p-8 rounded-2xl shadow-2xl dark:shadow-indigo-500/10 w-full max-w-md">
             <h2 id="link-modal-title" class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Añadir Nuevo Enlace</h2>
@@ -139,7 +121,7 @@
                 <div>
                     <label for="link-category" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Categoría</label>
                     <select id="link-category" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
-                        </select>
+                    </select>
                 </div>
                 <div id="link-error" class="text-red-500 dark:text-red-400 text-sm pt-2 hidden"></div>
                 <div class="flex justify-end gap-4 pt-4">
@@ -149,12 +131,10 @@
             </form>
         </div>
     </div>
-
     <div id="undo-toast" class="fixed bottom-6 left-6 bg-gray-800 border border-gray-700 text-white dark:bg-gray-200 dark:border-gray-300 dark:text-gray-900 p-4 rounded-lg shadow-lg flex items-center gap-4 z-50">
         <span class="font-medium">Enlace eliminado.</span>
         <button id="undo-btn" class="font-bold text-cyan-400 dark:text-blue-600 hover:text-cyan-300 dark:hover:text-blue-500">Deshacer</button>
     </div>
-
     <button id="back-to-top-btn" class="hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-opacity duration-300 z-40">
         <ion-icon name="arrow-up-outline" class="text-2xl"></ion-icon>
     </button>
@@ -163,14 +143,399 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // --- CONSTANTES ---
+            // --- CONSTANTES DE DATOS Y DOM ---
             const STORAGE_KEY_BOOKMARKS = 'dinamicBookmarks';
             const STORAGE_KEY_ORDER = 'dinamicBookmarksOrder';
             const STORAGE_KEY_THEME = 'dinamicBookmarksTheme';
             
-            const DEFAULT_DATA = { /* ... tus datos por defecto ... */ };
+            
+            // --- ¡¡¡DATOS INCORPORADOS!!! ---
+            
+            const DEFAULT_BOOKMARKS = {
+                "🔎 Búsqueda y Noticias": [
+                    {
+                        "title": "Google",
+                        "url": "https://www.google.com",
+                        "description": "Buscador web",
+                        "tags": []
+                    },
+                    {
+                        "title": "La Nueva",
+                        "url": "https://www.lanueva.com/",
+                        "description": "Noticias Locales y de la Argentina",
+                        "tags": []
+                    },
+                    {
+                        "title": "La Brújula",
+                        "url": "https://www.labrujula24.com/",
+                        "description": "Noticias Locales y de la Argentina",
+                        "tags": []
+                    },
+                    {
+                        "title": "Infobae",
+                        "url": "https://www.infobae.com/",
+                        "description": "Infobae",
+                        "tags": []
+                    },
+                    {
+                        "title": "DuckDuckGo",
+                        "url": "https://duckduckgo.com",
+                        "description": "Un buscador enfocado en la privacidad que no rastrea tu historial de búsqueda.",
+                        "tags": [
+                        "busqueda",
+                        "privacidad",
+                        "motor"
+                        ]
+                    },
+                    {
+                        "title": "Google News",
+                        "url": "https://news.google.com",
+                        "description": "Agregador de noticias de Google, personalizado según tus intereses.",
+                        "tags": [
+                        "noticias",
+                        "google",
+                        "agregador"
+                        ]
+                    },
+                    {
+                        "title": "Feedly",
+                        "url": "https://feedly.com",
+                        "description": "Lector de RSS para seguir blogs y sitios de noticias en un solo lugar.",
+                        "tags": [
+                        "rss",
+                        "noticias",
+                        "blogs",
+                        "tecnologia"
+                        ]
+                    }
+                ],
+                "🎬 Entretenimiento": [
+                    {
+                        "title": "YouTube",
+                        "url": "https://www.youtube.com",
+                        "description": "Plataforma de videos",
+                        "tags": []
+                    },
+                    {
+                        "title": "TikTok",
+                        "url": "https://www.tiktok.com/es/",
+                        "description": "Videos cortos",
+                        "tags": []
+                    },
+                    {
+                        "title": "Twitch",
+                        "url": "https://www.twitch.tv/",
+                        "description": "Twitch",
+                        "tags": []
+                    },
+                    {
+                        "title": "Spotify (Web Player)",
+                        "url": "https://open.spotify.com",
+                        "description": "Escucha música y podcasts directamente desde el navegador.",
+                        "tags": [
+                        "musica",
+                        "podcast",
+                        "streaming"
+                        ]
+                    },
+                    {
+                        "title": "Reddit",
+                        "url": "https://www.reddit.com",
+                        "description": "La \"portada de internet\". Foros y comunidades (subreddits) sobre cualquier tema.",
+                        "tags": [
+                        "comunidad",
+                        "foros",
+                        "noticias"
+                        ]
+                    },
+                    {
+                        "title": "Letterboxd",
+                        "url": "https://letterboxd.com",
+                        "description": "Red social para cinéfilos. Registra, califica y descubre películas.",
+                        "tags": [
+                        "cine",
+                        "peliculas",
+                        "social"
+                        ]
+                    }
+                ],
+                "💬 Redes Sociales": [
+                    {
+                        "title": "Twitter / X",
+                        "url": "https://twitter.com",
+                        "description": "Red social de noticias y tendencias",
+                        "tags": []
+                    },
+                    {
+                        "title": "Facebook",
+                        "url": "https://www.facebook.com",
+                        "description": "Red social para compartir con amigos",
+                        "tags": []
+                    },
+                    {
+                        "title": "Instagram",
+                        "url": "https://www.instagram.com",
+                        "description": "Fotos, videos y contenido de creadores",
+                        "tags": []
+                    },
+                    {
+                        "title": "WhatsApp Web",
+                        "url": "https://web.whatsapp.com",
+                        "description": "Usa WhatsApp directamente desde tu computadora.",
+                        "tags": [
+                        "chat",
+                        "mensajeria",
+                        "social"
+                        ]
+                    },
+                    {
+                        "title": "LinkedIn",
+                        "url": "https://www.linkedin.com",
+                        "description": "Red social profesional para networking, perfiles de trabajo y noticias del sector.",
+                        "tags": [
+                        "profesional",
+                        "trabajo",
+                        "networking"
+                        ]
+                    },
+                    {
+                        "title": "Discord",
+                        "url": "https://discord.com/app",
+                        "description": "Plataforma de chat por voz, video y texto para comunidades.",
+                        "tags": [
+                        "chat",
+                        "comunidad",
+                        "gaming"
+                        ]
+                    }
+                ],
+                "👨‍💻 Tecnología / Trabajo": [
+                    {
+                        "title": "GitHub",
+                        "url": "https://github.com",
+                        "description": "Repositorio y colaboración de proyectos de código",
+                        "tags": []
+                    },
+                    {
+                        "title": "Gmail",
+                        "url": "https://mail.google.com/mail/u/0/#inbox",
+                        "description": "Correo electrónico de Google",
+                        "tags": []
+                    },
+                    {
+                        "title": "Google Calendar",
+                        "url": "https://calendar.google.com",
+                        "description": "Calendario y eventos online",
+                        "tags": []
+                    },
+                    {
+                        "title": "Notion",
+                        "url": "https://www.notion.so",
+                        "description": "Espacio de trabajo todo-en-uno para notas, tareas, wikis y bases de datos.",
+                        "tags": [
+                        "productividad",
+                        "notas",
+                        "wiki"
+                        ]
+                    },
+                    {
+                        "title": "Google Drive",
+                        "url": "https://drive.google.com",
+                        "description": "Almacenamiento en la nube, documentos, hojas de cálculo y presentaciones de Google.",
+                        "tags": [
+                        "nube",
+                        "docs",
+                        "google",
+                        "oficina"
+                        ]
+                    },
+                    {
+                        "title": "Trello",
+                        "url": "https://trello.com",
+                        "description": "Herramienta visual de gestión de proyectos estilo Kanban (tableros y tarjetas).",
+                        "tags": [
+                        "productividad",
+                        "kanban",
+                        "proyectos"
+                        ]
+                    }
+                ],
+                "🤖 Inteligencia Artificial": [
+                    {
+                        "title": "ChatGPT",
+                        "url": "https://chat.openai.com",
+                        "description": "Chat de IA de OpenAI",
+                        "tags": []
+                    },
+                    {
+                        "title": "Perplexity",
+                        "url": "https://www.perplexity.ai/?login-source=oneTapHome&login-new=false",
+                        "description": "Buscador con IA",
+                        "tags": []
+                    },
+                    {
+                        "title": "Gemini",
+                        "url": "https://gemini.google.com",
+                        "description": "Gemini",
+                        "tags": []
+                    },
+                    {
+                        "title": "Claude",
+                        "url": "https://claude.ai",
+                        "description": "Modelo de IA conversacional de Anthropic, gran competidor de ChatGPT.",
+                        "tags": [
+                        "ia",
+                        "chatbot",
+                        "anthropic"
+                        ]
+                    },
+                    {
+                        "title": "Poe",
+                        "url": "https://poe.com",
+                        "description": "Plataforma para chatear con múltiples bots de IA (ChatGPT, Claude, etc.) en un solo lugar.",
+                        "tags": [
+                        "ia",
+                        "chatbot",
+                        "agregador"
+                        ]
+                    },
+                    {
+                        "title": "Midjourney",
+                        "url": "https://www.midjourney.com",
+                        "description": "El generador de imágenes por IA más potente (se usa a través de Discord).",
+                        "tags": [
+                        "ia",
+                        "imagenes",
+                        "generador"
+                        ]
+                    }
+                ],
+                "🧠 Programación": [
+                    {
+                        "title": "Hugging Face",
+                        "url": "https://huggingface.co",
+                        "description": "Modelos de IA, datasets y herramientas colaborativas",
+                        "tags": []
+                    },
+                    {
+                        "title": "Kaggle",
+                        "url": "https://www.kaggle.com",
+                        "description": "Competencias de IA, análisis de datos y notebooks",
+                        "tags": []
+                    },
+                    {
+                        "title": "freeCodeCamp",
+                        "url": "https://www.freecodecamp.org",
+                        "description": "Cursos gratuitos interactivos de HTML, CSS, JS y más",
+                        "tags": []
+                    },
+                    {
+                        "title": "W3Schools",
+                        "url": "https://www.w3schools.com",
+                        "description": "Tutoriales fáciles de HTML, CSS, JavaScript y más",
+                        "tags": []
+                    },
+                    {
+                        "title": "MDN Web Docs",
+                        "url": "https://developer.mozilla.org/es/",
+                        "description": "Documentación oficial y ejemplos de HTML, CSS y JS",
+                        "tags": []
+                    },
+                    {
+                        "title": "JavaScript Info",
+                        "url": "https://javascript.info",
+                        "description": "Guía completa y clara para aprender JavaScript",
+                        "tags": []
+                    },
+                    {
+                        "title": "Codecademy",
+                        "url": "https://www.codecademy.com",
+                        "description": "Cursos prácticos de programación interactivos",
+                        "tags": []
+                    },
+                    {
+                        "title": "SoloLearn",
+                        "url": "https://www.sololearn.com",
+                        "description": "Aprendé programación desde el celu o la compu con lecciones cortas",
+                        "tags": []
+                    },
+                    {
+                        "title": "GeeksForGeeks",
+                        "url": "https://www.geeksforgeeks.org",
+                        "description": "Ejemplos, ejercicios y teoría de programación",
+                        "tags": []
+                    },
+                    {
+                        "title": "Stack Overflow",
+                        "url": "https://www.stackoverflow.com",
+                        "description": "Preguntá y buscá soluciones a problemas de código",
+                        "tags": []
+                    },
+                    {
+                        "title": "Figma",
+                        "url": "https://www.figma.com",
+                        "description": "Herramienta de diseño de interfaces (UI/UX) colaborativa basada en la web.",
+                        "tags": [
+                        "diseño",
+                        "ui",
+                        "ux",
+                        "frontend"
+                        ]
+                    },
+                    {
+                        "title": "CodePen",
+                        "url": "https://codepen.io",
+                        "description": "Patio de juegos online para probar y mostrar snippets de HTML, CSS y JavaScript.",
+                        "tags": [
+                        "frontend",
+                        "css",
+                        "js",
+                        "html",
+                        "demo"
+                        ]
+                    },
+                    {
+                        "title": "Replit",
+                        "url": "https://replit.com",
+                        "description": "IDE completo en la nube para programar, compilar y alojar proyectos en cualquier lenguaje.",
+                        "tags": [
+                        "ide",
+                        "nube",
+                        "programacion",
+                        "backend"
+                        ]
+                    }
+                ],
+                "Descargas para Mac": [
+                    {
+                        "title": "nMac.to",
+                        "url": "https://nmac.to/now/",
+                        "description": "nMac.to",
+                        "tags": []
+                    },
+                    {
+                        "title": "MacTorrents",
+                        "url": "https://www.torrentmac.net/",
+                        "description": "MacTorrents",
+                        "tags": []
+                    }
+                ]
+            };
+            
+            const DEFAULT_ORDER = [
+                "🔎 Búsqueda y Noticias",
+                "🎬 Entretenimiento",
+                "💬 Redes Sociales",
+                "👨‍💻 Tecnología / Trabajo",
+                "🤖 Inteligencia Artificial",
+                "🧠 Programación",
+                "Descargas para Mac"
+            ];
 
-            // --- Elementos del DOM (sin cambios) ---
+            // -----------------------------------------------
+
+
+            // --- Elementos del DOM ---
             const categoriesContainer = document.getElementById('categories-container');
             const categoryModal = document.getElementById('category-modal');
             const linkModal = document.getElementById('link-modal');
@@ -199,7 +564,7 @@
             const themeIcon = themeToggleBtn.querySelector('ion-icon');
             const backToTopBtn = document.getElementById('back-to-top-btn');
 
-            // --- Estado de la Aplicación (sin cambios) ---
+            // --- Estado de la Aplicación ---
             let bookmarksData = {};
             let categoryOrder = [];
             let undoState = null; 
@@ -207,7 +572,8 @@
             let editState = null; 
 
             
-            // --- Funciones de Datos (migrate, load, save) (sin cambios) ---
+            // --- Funciones de Datos (migrate, load, save) ---
+            
             function migrateData() {
                 let needsSave = false;
                 categoryOrder.forEach(category => {
@@ -229,23 +595,36 @@
                 }
                 if (needsSave) { saveData(); }
             }
+
+            // --- Lógica de Carga (Modificada) ---
             function loadData() {
                 const savedData = localStorage.getItem(STORAGE_KEY_BOOKMARKS);
                 const savedOrder = localStorage.getItem(STORAGE_KEY_ORDER);
-                if (savedData) { bookmarksData = JSON.parse(savedData); }
-                if (savedOrder) { categoryOrder = JSON.parse(savedOrder); } 
-                else if (savedData) { categoryOrder = Object.keys(bookmarksData); } 
-                else {
-                    bookmarksData = DEFAULT_DATA;
-                    categoryOrder = Object.keys(DEFAULT_DATA);
+
+                if (savedData) {
+                    bookmarksData = JSON.parse(savedData);
+                } else {
+                    bookmarksData = DEFAULT_BOOKMARKS; // Carga los predeterminados
+                }
+
+                if (savedOrder) {
+                    categoryOrder = JSON.parse(savedOrder);
+                } else {
+                    categoryOrder = DEFAULT_ORDER; // Carga el orden predeterminado
+                }
+                
+                if (!savedData && !savedOrder) {
                     saveData(); 
                 }
+                
                 migrateData();
             }
+            
             function saveData() {
                 localStorage.setItem(STORAGE_KEY_BOOKMARKS, JSON.stringify(bookmarksData));
                 localStorage.setItem(STORAGE_KEY_ORDER, JSON.stringify(categoryOrder));
             }
+            
             function getDomain(url) {
                 try {
                     const parsedUrl = new URL(url);
@@ -253,10 +632,7 @@
                 } catch (e) { return 'google.com'; }
             }
             
-            // --- ¡¡¡FUNCIÓN MODIFICADA!!! ---
-            /**
-             * Renderiza la página (con los nuevos 'handles' de arrastre)
-             */
+            // --- Función Render (Modificada) ---
             function renderPage() {
                 categoriesContainer.innerHTML = ''; 
                 hideUndoToast();
@@ -279,7 +655,6 @@
                     const categoryEl = document.createElement('section');
                     categoryEl.className = 'category-section';
                     
-                    // --- NUEVO: Añadido 'category-drag-handle' ---
                     categoryEl.innerHTML = `
                         <div class="category-header flex justify-between items-center mb-4 group">
                             <div class="flex items-center gap-2">
@@ -316,29 +691,24 @@
                             linkEl.href = link.url;
                             linkEl.target = '_blank';
                             linkEl.title = link.description || link.title; 
-                            // --- NUEVO: 'items-center' para alinear el handle verticalmente ---
                             linkEl.className = 'link-item bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-4 flex items-center gap-3 transition-all relative group shadow-md dark:shadow-lg hover:shadow-lg hover:dark:shadow-indigo-500/30 hover:-translate-y-1 duration-300';
                             
-                            // --- NUEVO: Añadido 'link-drag-handle' ---
                             linkEl.innerHTML = `
                                 <div class="link-drag-handle cursor-move text-gray-400 dark:text-gray-500 flex-shrink-0" title="Mover enlace">
                                     <ion-icon name="reorder-two-outline" class="text-2xl"></ion-icon>
                                 </div>
-                            
                                 <div class="w-6 h-6 flex-shrink-0">
                                     <img src="${faviconUrl}" alt="${link.title} favicon" class="w-6 h-6 rounded-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
                                     <div class="w-6 h-6 rounded-sm bg-gray-200 dark:bg-gray-700 items-center justify-center text-gray-500 dark:text-gray-400" style="display: none;">
                                         <ion-icon name="globe-outline"></ion-icon>
                                     </div>
                                 </div>
-                                
                                 <div class="flex-grow overflow-hidden">
                                     <span class="link-title-span text-gray-900 dark:text-gray-100 font-medium truncate block">${link.title}</span>
                                     <div class="flex flex-wrap gap-1 mt-2">
                                         ${tagsHTML}
                                     </div>
                                 </div>
-                                
                                 <div class="link-actions absolute top-2 right-2 flex gap-1">
                                     <button class="edit-link-btn bg-blue-500/70 backdrop-blur-sm hover:bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs" 
                                             data-category="${categoryName}" data-index="${index}" title="Editar enlace">
@@ -358,13 +728,12 @@
 
                     categoriesContainer.appendChild(categoryEl);
 
-                    // --- ¡¡¡MODIFICADO!!! ---
-                    // Inicializar SortableJS para ENLACES (ahora usa 'handle')
+                    // SortableJS para ENLACES
                     new Sortable(linksGrid, {
                         animation: 150,
                         ghostClass: 'sortable-ghost', 
                         draggable: '.link-item',
-                        handle: '.link-drag-handle', // NUEVO: Solo arrastrar desde el handle
+                        handle: '.link-drag-handle',
                         onEnd: (evt) => {
                             const category = evt.from.dataset.category;
                             const [movedItem] = bookmarksData[category].splice(evt.oldIndex, 1);
@@ -375,13 +744,12 @@
                     });
                 });
 
-                // --- ¡¡¡MODIFICADO!!! ---
-                // Inicializar SortableJS para CATEGORÍAS (ahora usa 'handle')
+                // SortableJS para CATEGORÍAS
                 new Sortable(categoriesContainer, {
                     animation: 150,
                     ghostClass: 'sortable-ghost',
                     draggable: '.category-section', 
-                    handle: '.category-drag-handle', // NUEVO: Solo arrastrar desde el handle
+                    handle: '.category-drag-handle',
                     onEnd: (evt) => {
                         const [movedItem] = categoryOrder.splice(evt.oldIndex, 1);
                         categoryOrder.splice(evt.newIndex, 0, movedItem);
@@ -392,186 +760,12 @@
                 updateCategorySelect();
             }
 
-            // --- Resto de funciones (sin cambios) ---
+            // --- Resto de funciones (minimizadas para legibilidad) ---
+            function updateCategorySelect(){linkCategorySelect.innerHTML='';let e=linkCategorySelect.value;categoryOrder.forEach(t=>{const n=document.createElement("option");n.value=t,n.textContent=t,linkCategorySelect.appendChild(n)}),categoryOrder.includes(e)&&(linkCategorySelect.value=e)}function showModal(e){hideErrorMessages(),e.classList.add("flex")}function hideModal(e){e.classList.remove("flex"),categoryForm.reset(),linkForm.reset(),editState=null,categoryModalTitle.textContent="Crear Nueva Categoría",linkModalTitle.textContent="Añadir Nuevo Enlace"}function hideErrorMessages(){categoryError.classList.add("hidden"),linkError.classList.add("hidden")}function showUndoToast(e,t,n){clearTimeout(undoTimeout),undoState={category:e,index:t,linkData:n},undoToast.classList.add("show"),undoTimeout=setTimeout(hideUndoToast,5e3)}function hideUndoToast(){undoToast.classList.remove("show"),undoState=null,clearTimeout(undoTimeout)}function handleUndoClick(){if(!undoState)return;const{category:e,index:t,linkData:n}=undoState;bookmarksData[e].splice(t,0,n),saveData(),renderPage(),hideUndoToast()}function showEditCategoryModal(e){editState={type:"category",oldName:e},categoryNameInput.value=e,categoryModalTitle.textContent="Renombrar Categoría",showModal(categoryModal)}function showEditLinkModal(e,t){editState={type:"link",category:e,index:t};const n=bookmarksData[e][t];linkTitleInput.value=n.title,linkUrlInput.value=n.url,linkDescriptionInput.value=n.description||"",linkTagsInput.value=(n.tags||[]).join(", "),updateCategorySelect(),linkCategorySelect.value=e,linkModalTitle.textContent="Editar Enlace",showModal(linkModal)}function handleSearch(){const e=searchInput.value.toLowerCase();document.querySelectorAll(".category-section").
+forEach(t=>{let n=!1;const o=t.querySelectorAll(".link-item");o.forEach(t=>{const o=(t.querySelector(".link-title-span")?.textContent||"").toLowerCase(),a=(t.title||"").toLowerCase(),i=Array.from(t.querySelectorAll(".link-tag-span")).map(e=>e.textContent.toLowerCase()).join(" "),c=`${o} ${a} ${i}`;c.includes(e)?(t.classList.remove("hidden"),n=!0):t.classList.add("hidden")}),n||""===e?t.classList.remove("hidden"):t.classList.add("hidden")})}function exportData(){const e={bookmarks:bookmarksData,order:categoryOrder},t=JSON.stringify(e,null,2),n=new Blob([t],{type:"application/json"}),o=URL.createObjectURL(n),a=document.createElement("a");a.href=o,a.download="favoritos_backup.json",a.click(),URL.revokeObjectURL(o)}function importData(e){const t=e.target.files[0];if(!t)return;const n=new FileReader;n.onload=e=>{let t="replace";try{const n=JSON.parse(e.target.result);if(!n.bookmarks||!n.order)throw new Error("El archivo no tiene el formato correcto.");confirm('¿Quieres COMBINAR los enlaces del archivo con los actuales? \n\n(Presiona "Cancelar" para REEMPLAZAR todo).')?(t="merge",Object.keys(n.bookmarks).forEach(e=>{bookmarksData.hasOwnProperty(e)?n.bookmarks[e].forEach(t=>{bookmarksData[e].some(e=>e.url===t.url)||bookmarksData[e].push(t)}):(bookmarksData[e]=n.bookmarks[e],categoryOrder.includes(e)||categoryOrder.push(e))})):(t="replace",bookmarksData=n.bookmarks,categoryOrder=n.order),migrateData(),saveData(),renderPage(),"merge"===t?alert("¡Enlaces combinados con éxito!"):alert("¡Importación (reemplazo) exitosa!")}catch(e){alert("Error: "+e.message)}importFileInput.value=""},n.readAsText(t)}function applyTheme(e){"light"===e?(document.documentElement.classList.remove("dark"),themeIcon.setAttribute("name","moon-outline")):(document.documentElement.classList.add("dark"),themeIcon.setAttribute("name","sunny-outline")),localStorage.setItem(STORAGE_KEY_THEME,e)}function toggleTheme(){const e=document.documentElement.classList.contains("dark")?"dark":"light";applyTheme("dark"===e?"light":"dark")}function handleScroll(){window.scrollY>300?(backToTopBtn.classList.remove("hidden"),backToTopBtn.classList.add("flex")):(backToTopBtn.classList.add("hidden"),backToTopBtn.classList.remove("flex"))}
 
-            function updateCategorySelect() {
-                linkCategorySelect.innerHTML = ''; 
-                let selectedCategory = linkCategorySelect.value;
-                categoryOrder.forEach(categoryName => {
-                    const option = document.createElement('option');
-                    option.value = categoryName;
-                    option.textContent = categoryName;
-                    linkCategorySelect.appendChild(option);
-                });
-                if (categoryOrder.includes(selectedCategory)) {
-                    linkCategorySelect.value = selectedCategory;
-                }
-            }
-            function showModal(modalEl) {
-                hideErrorMessages();
-                modalEl.classList.add('flex');
-            }
-            function hideModal(modalEl) {
-                modalEl.classList.remove('flex');
-                categoryForm.reset();
-                linkForm.reset();
-                editState = null;
-                categoryModalTitle.textContent = 'Crear Nueva Categoría';
-                linkModalTitle.textContent = 'Añadir Nuevo Enlace';
-            }
-            function hideErrorMessages() {
-                categoryError.classList.add('hidden');
-                linkError.classList.add('hidden');
-            }
-            function showUndoToast(category, index, linkData) {
-                clearTimeout(undoTimeout);
-                undoState = { category, index, linkData };
-                undoToast.classList.add('show');
-                undoTimeout = setTimeout(hideUndoToast, 5000);
-            }
-            function hideUndoToast() {
-                undoToast.classList.remove('show');
-                undoState = null;
-                clearTimeout(undoTimeout);
-            }
-            function handleUndoClick() {
-                if (!undoState) return; 
-                const { category, index, linkData } = undoState;
-                bookmarksData[category].splice(index, 0, linkData);
-                saveData();
-                renderPage(); 
-                hideUndoToast(); 
-            }
-            function showEditCategoryModal(oldName) {
-                editState = { type: 'category', oldName: oldName };
-                categoryNameInput.value = oldName;
-                categoryModalTitle.textContent = 'Renombrar Categoría';
-                showModal(categoryModal);
-            }
-            function showEditLinkModal(category, index) {
-                editState = { type: 'link', category: category, index: index };
-                const link = bookmarksData[category][index];
-                linkTitleInput.value = link.title;
-                linkUrlInput.value = link.url;
-                linkDescriptionInput.value = link.description || '';
-                linkTagsInput.value = (link.tags || []).join(', ');
-                updateCategorySelect(); 
-                linkCategorySelect.value = category; 
-                linkModalTitle.textContent = 'Editar Enlace';
-                showModal(linkModal);
-            }
-            function handleSearch() {
-                const searchTerm = searchInput.value.toLowerCase();
-                document.querySelectorAll('.category-section').forEach(categoryEl => {
-                    let categoryHasVisibleLinks = false;
-                    const links = categoryEl.querySelectorAll('.link-item');
-                    links.forEach(linkEl => {
-                        const title = (linkEl.querySelector('.link-title-span')?.textContent || '').toLowerCase();
-                        const description = (linkEl.title || '').toLowerCase();
-                        const tags = Array.from(linkEl.querySelectorAll('.link-tag-span'))
-                                        .map(tag => tag.textContent.toLowerCase())
-                                        .join(' ');
-                        const searchableText = `${title} ${description} ${tags}`;
-                        if (searchableText.includes(searchTerm)) {
-                            linkEl.classList.remove('hidden');
-                            categoryHasVisibleLinks = true;
-                        } else {
-                            linkEl.classList.add('hidden');
-                        }
-                    });
-                    if (categoryHasVisibleLinks || searchTerm === '') {
-                        categoryEl.classList.remove('hidden');
-                    } else {
-                        categoryEl.classList.add('hidden');
-                    }
-                });
-            }
-            function exportData() {
-                const backupData = { bookmarks: bookmarksData, order: categoryOrder };
-                const jsonString = JSON.stringify(backupData, null, 2);
-                const blob = new Blob([jsonString], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = 'favoritos_backup.json';
-                a.click();
-                URL.revokeObjectURL(url);
-            }
-            function importData(event) {
-                const file = event.target.files[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    let importMode = 'replace';
-                    try {
-                        const imported = JSON.parse(e.target.result);
-                        if (!imported.bookmarks || !imported.order) {
-                            throw new Error('El archivo no tiene el formato correcto.');
-                        }
-                        if (confirm('¿Quieres COMBINAR los enlaces del archivo con los actuales? \n\n(Presiona "Cancelar" para REEMPLAZAR todo).')) {
-                            importMode = 'merge';
-                            for (const categoryName in imported.bookmarks) {
-                                if (!bookmarksData.hasOwnProperty(categoryName)) {
-                                    bookmarksData[categoryName] = imported.bookmarks[categoryName];
-                                    if (!categoryOrder.includes(categoryName)) {
-                                        categoryOrder.push(categoryName);
-                                    }
-                                } else {
-                                    const newLinks = imported.bookmarks[categoryName];
-                                    newLinks.forEach(newLink => {
-                                        const alreadyExists = bookmarksData[categoryName].some(existingLink => existingLink.url === newLink.url);
-                                        if (!alreadyExists) {
-                                            bookmarksData[categoryName].push(newLink);
-                                        }
-                                    });
-                                }
-                            }
-                        } else {
-                            importMode = 'replace';
-                            bookmarksData = imported.bookmarks;
-                            categoryOrder = imported.order;
-                        }
-                        migrateData(); 
-                        saveData();    
-                        renderPage();  
-                        if (importMode === 'merge') {
-                            alert('¡Enlaces combinados con éxito!');
-                        } else {
-                            alert('¡Importación (reemplazo) exitosa!');
-                        }
-                    } catch (err) {
-                        alert('Error: ' + err.message);
-                    }
-                    importFileInput.value = '';
-                };
-                reader.readAsText(file);
-            }
-            function applyTheme(theme) {
-                if (theme === 'light') {
-                    document.documentElement.classList.remove('dark');
-                    themeIcon.setAttribute('name', 'moon-outline');
-                } else {
-                    document.documentElement.classList.add('dark');
-                    themeIcon.setAttribute('name', 'sunny-outline');
-                }
-                localStorage.setItem(STORAGE_KEY_THEME, theme);
-            }
-            function toggleTheme() {
-                const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
-                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-                applyTheme(newTheme);
-            }
-            function handleScroll() {
-                if (window.scrollY > 300) {
-                    backToTopBtn.classList.remove('hidden');
-                    backToTopBtn.classList.add('flex');
-                } else {
-                    backToTopBtn.classList.add('hidden');
-                    backToTopBtn.classList.remove('flex');
-                }
-            }
 
-            // --- Manejadores de Eventos (sin cambios) ---
+            // --- Manejadores de Eventos ---
             addCategoryBtn.addEventListener('click', () => {
                 editState = null; 
                 categoryModalTitle.textContent = 'Crear Nueva Categoría';
@@ -581,7 +775,7 @@
                 if (categoryOrder.length === 0) {
                     showModal(categoryModal);
                     categoryError.textContent = 'Debes crear una categoría primero.';
-                    categoryError.classList.remove('hidden');
+                    categoryError.classList.remove("hidden");
                     return;
                 }
                 editState = null; 
@@ -601,7 +795,7 @@
                     if (newName === oldName) { hideModal(categoryModal); return; }
                     if (bookmarksData.hasOwnProperty(newName)) {
                         categoryError.textContent = 'Esa categoría ya existe.';
-                        categoryError.classList.remove('hidden');
+                        categoryError.classList.remove("hidden");
                         return;
                     }
                     bookmarksData[newName] = bookmarksData[oldName];
@@ -611,7 +805,7 @@
                 } else {
                     if (bookmarksData.hasOwnProperty(newName)) {
                         categoryError.textContent = 'Esa categoría ya existe.';
-                        categoryError.classList.remove('hidden');
+                        categoryError.classList.remove("hidden");
                         return;
                     }
                     bookmarksData[newName] = []; 
@@ -630,7 +824,7 @@
                 const tags = linkTagsInput.value.trim().split(',').map(tag => tag.trim()).filter(tag => tag !== ''); 
                 if (!title || !url || !category) {
                     linkError.textContent = 'Por favor completa todos los campos.';
-                    linkError.classList.remove('hidden');
+                    linkError.classList.remove("hidden");
                     return;
                 }
                 const finalUrl = (url.startsWith('http://') || url.startsWith('https://')) ? url : `https://${url}`;
@@ -662,9 +856,7 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
             categoriesContainer.addEventListener('click', (e) => {
-                // Previene que el <a> se active si se clickea un botón
                 if (e.target.closest('a') && !e.target.closest('button')) {
-                    // Excepción: si se clickea el handle, también prevenir
                     if (e.target.closest('.link-drag-handle')) {
                          e.preventDefault();
                          e.stopPropagation();
@@ -675,7 +867,6 @@
                     e.preventDefault();
                     e.stopPropagation();
                 }
-
                 const editLinkBtn = e.target.closest('.edit-link-btn');
                 if (editLinkBtn) {
                     showEditLinkModal(editLinkBtn.dataset.category, parseInt(editLinkBtn.dataset.index, 10));
@@ -709,7 +900,7 @@
             });
 
             // --- INICIALIZACIÓN ---
-            loadData();
+            loadData(); // Carga (desde predeterminados o localStorage) y migra los datos
             const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
             applyTheme(savedTheme);
             renderPage();
