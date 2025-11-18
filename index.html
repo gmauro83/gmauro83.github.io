@@ -1,8 +1,9 @@
 <!DOCTYPE html>
-<html lang="es"> <head>
+<html lang="es" class="dark">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favoritos ✨</title>
+    <title>Favoritos 🌌</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
@@ -10,121 +11,75 @@
 
     <script>
         tailwind.config = {
-            darkMode: 'class', // Habilita el modo oscuro
+            darkMode: 'class', 
             theme: {
-                extend: {
-                    // Color de acento
-                    colors: {
-                        accent: {
-                            500: '#3b82f6', // azul-500
-                            600: '#2563eb', // azul-600
-                        }
-                    }
-                }
+                extend: {}
             }
         }
     </script>
 
     <style>
-        /* Fuente más limpia */
         body { font-family: 'Inter', sans-serif; }
-        
-        /* Ocultar modales por defecto */
         .modal { display: none; }
         .modal.flex { display: flex; }
-        
-        /* Estilos de "fantasma" para Drag & Drop */
-        .sortable-ghost {
-            opacity: 0.4;
-            background: #e0e7ff; /* indigo-100 */
-        }
-        .dark .sortable-ghost {
-            background: #3730a3; /* indigo-900 */
-        }
-
-        /* Toast de Deshacer */
-        #undo-toast {
-            transform: translateY(120%);
-            transition: transform 0.3s ease-in-out;
-            visibility: hidden;
-        }
-        #undo-toast.show {
-            transform: translateY(0);
-            visibility: visible;
-        }
-        
-        /* Estilos para ocultar/mostrar controles sutiles */
-        .link-item .link-actions,
-        .link-item .link-drag-handle,
-        .category-header .category-actions,
-        .category-header .category-drag-handle {
-            opacity: 0;
-            transition: opacity 0.2s ease-in-out;
-        }
-        
-        /* Mostrar al pasar el ratón por encima (en PC) */
-        .link-item:hover .link-actions,
-        .link-item:hover .link-drag-handle,
-        .category-header:hover .category-actions,
-        .category-header:hover .category-drag-handle {
-            opacity: 0.5; /* Sutil */
-        }
-        
-        /* Mostrar siempre en pantallas táctiles (móviles) */
-        @media (pointer: coarse) {
-            .link-item .link-actions,
-            .link-item .link-drag-handle,
-            .category-header .category-actions,
-            .category-header .category-drag-handle {
-                opacity: 0.3;
-            }
-        }
-        
-        .link-item .link-actions:hover,
-        .link-item .link-drag-handle:hover,
-        .category-header .category-actions:hover,
-        .category-header .category-drag-handle:hover {
-            opacity: 1; /* Opacidad total al apuntar al control */
-        }
-
+        .link-item .link-actions { opacity: 0; transform: scale(0.8); transition: all 0.2s ease-in-out; }
+        .link-item:hover .link-actions { opacity: 1; transform: scale(1); }
+        .category-header .edit-category-btn { opacity: 0; transition: all 0.2s ease-in-out; }
+        .category-header:hover .edit-category-btn { opacity: 1; }
+        .sortable-ghost { opacity: 0.4; background: #e5e7eb; border: 2px dashed #6b7280; }
+        .dark .sortable-ghost { background: #4a5568; }
+        #undo-toast { transform: translateY(100%); transition: transform 0.3s ease-in-out; visibility: hidden; }
+        #undo-toast.show { transform: translateY(0); visibility: visible; }
     </style>
 </head>
-<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen p-4 md:p-8 transition-colors duration-200 antialiased">
+<body class="bg-gray-100 text-gray-900 dark:bg-gradient-to-br dark:from-gray-950 dark:via-black dark:to-indigo-950 dark:text-gray-100 min-h-screen p-4 md:p-8 transition-colors duration-300">
 
-    <div class="max-w-4xl mx-auto">
+    <div class="max-w-7xl mx-auto">
 
-        <header class="mb-10">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Favoritos</h1>
-                <div class="flex gap-2">
-                    <button id="add-link-btn" class="flex items-center gap-1.5 bg-accent-500 hover:bg-accent-600 text-white font-medium py-2 px-3.5 rounded-lg transition-all text-sm">
-                        <ion-icon name="add-outline" class="text-xl"></ion-icon>
-                        Enlace
+        <header class="mb-8 relative"> 
+            
+            <button id="desktop-hamburger-btn" class="hidden md:flex bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 w-12 h-12 rounded-lg transition-colors items-center justify-center absolute top-0 left-0" title="Abrir menú de categorías">
+                <ion-icon name="menu-outline" class="text-2xl"></ion-icon>
+            </button>
+            <div class="flex flex-col sm:flex-row justify-center items-center mb-6 gap-4 sm:gap-8">
+                <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700 dark:from-cyan-400 dark:to-fuchsia-500">Favoritos</h1>
+                <div class="flex gap-3">
+                    <button id="add-link-btn" class="bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-blue-500 dark:to-purple-600 dark:hover:from-blue-600 dark:hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2 hover:shadow-lg dark:hover:shadow-purple-500/40">
+                        <ion-icon name="add-outline"></ion-icon>
+                        Nuevo Enlace
                     </button>
-                    <button id="add-category-btn" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 px-3.5 rounded-lg transition-all text-sm">
-                        <ion-icon name="duplicate-outline" class="text-lg"></ion-icon>
-                        Categoría
+                    <button id="add-category-btn" class="bg-white text-gray-700 border border-gray-300 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-600 dark:hover:bg-gray-700 dark:hover:border-gray-500 dark:text-gray-200 font-bold py-2 px-4 rounded-lg transition-all flex items-center justify-center gap-2 hover:shadow-lg dark:hover:shadow-gray-700/40">
+                        <ion-icon name="duplicate-outline"></ion-icon>
+                        Nueva Categoría
                     </button>
                 </div>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-3">
-                <div class="relative flex-grow">
-                    <input type="search" id="search-input" placeholder="Buscar en todos los enlaces..." class="w-full p-3 pl-10 bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-accent-500 dark:border-transparent dark:focus:border-accent-500 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500/50 transition-colors">
+            <div class="flex flex-col md:flex-row gap-4 justify-between items-center max-w-3xl mx-auto">
+                
+                <button id="hamburger-btn" class="md:hidden w-full bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold py-3 px-4 rounded-lg transition-colors flex items-center gap-2 justify-center">
+                    <ion-icon name="menu-outline" class="text-xl"></ion-icon>
+                    <span>Menú de Categorías</span>
+                </button>
+                <div class="relative w-full md:w-auto flex-grow">
+                    <input type="search" id="search-input" placeholder="Buscar en títulos, descripciones y etiquetas..." class="w-full p-3 pl-10 bg-gray-200 dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                         <ion-icon name="search-outline" class="text-gray-500 dark:text-gray-400"></ion-icon>
                     </div>
                 </div>
 
-                <div class="flex gap-2 flex-shrink-0">
-                    <button id="import-btn" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-lg transition-colors flex items-center" title="Importar desde .json">
-                        <ion-icon name="arrow-up-outline" class="text-xl"></ion-icon>
+                <div class="flex gap-3 flex-shrink-0">
+                    <button id="import-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Importar desde .json">
+                        <ion-icon name="arrow-up-outline"></ion-icon>
+                        Importar
                     </button>
-                    <button id="export-btn" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-lg transition-colors flex items-center" title="Exportar a .json">
-                        <ion-icon name="arrow-down-outline" class="text-xl"></ion-icon>
+                    <button id="export-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Exportar a .json">
+                        <ion-icon name="arrow-down-outline"></ion-icon>
+                        Exportar
                     </button>
                     <input type="file" id="import-file" accept=".json" class="hidden">
-                    <button id="theme-toggle-btn" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-lg transition-colors flex items-center" title="Cambiar tema">
+                    
+                    <button id="theme-toggle-btn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-200 font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-2" title="Cambiar tema">
                         <ion-icon name="sunny-outline" class="text-xl"></ion-icon>
                     </button>
                 </div>
@@ -135,63 +90,75 @@
             </main>
     </div>
 
-    <div id="category-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+    <div id="mobile-menu-overlay" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-40"></div>
+
+    <div id="mobile-menu" class="fixed top-0 left-0 h-full w-full max-w-xs bg-white dark:bg-gray-950 shadow-2xl z-50 transform -translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+        <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-800 flex-shrink-0">
+            <h2 class="text-xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-700 dark:from-cyan-400 dark:to-fuchsia-500">Categorías</h2>
+            <button id="mobile-menu-close-btn" class="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white p-2 rounded-full -mr-2">
+                <ion-icon name="close-outline" class="text-2xl"></ion-icon>
+            </button>
+        </div>
+        <div id="mobile-menu-content" class="overflow-y-auto flex-grow">
+            </div>
+    </div>
+    <div id="category-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800/90 dark:border dark:border-gray-700 p-8 rounded-2xl shadow-2xl dark:shadow-indigo-500/10 w-full max-w-md">
             <h2 id="category-modal-title" class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Crear Nueva Categoría</h2>
             <form id="category-form">
                 <div>
                     <label for="category-name" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Nombre de la Categoría</label>
-                    <input type="text" id="category-name" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: Herramientas de Diseño" required>
+                    <input type="text" id="category-name" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ej: Herramientas de Diseño" required>
                 </div>
                 <div id="category-error" class="text-red-500 dark:text-red-400 text-sm mt-2 hidden"></div>
                 <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" class="modal-close-btn bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Guardar</button>
+                    <button type="button" class="modal-close-btn bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-blue-500 dark:to-purple-600 dark:hover:from-blue-600 dark:hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
+    <div id="link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50">
+        <div class="bg-white dark:bg-gray-800/90 dark:border dark:border-gray-700 p-8 rounded-2xl shadow-2xl dark:shadow-indigo-500/10 w-full max-w-md">
             <h2 id="link-modal-title" class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Añadir Nuevo Enlace</h2>
             <form id="link-form" class="space-y-4">
                 <div>
                     <label for="link-title" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Título</label>
-                    <input type="text" id="link-title" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: Google" required>
+                    <input type="text" id="link-title" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ej: Google" required>
                 </div>
                 <div>
                     <label for="link-url" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">URL (Enlace)</label>
-                    <input type="text" id="link-url" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: https://www.google.com" required>
+                    <input type="text" id="link-url" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ej: https://www.google.com" required>
                 </div>
                 <div>
                     <label for="link-description" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Descripción (Opcional)</label>
-                    <textarea id="link-description" rows="2" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: Buscador web rápido y eficiente"></textarea>
+                    <textarea id="link-description" rows="2" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ej: Buscador web rápido y eficiente"></textarea>
                 </div>
                 <div>
                     <label for="link-tags" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Etiquetas (Opcional, separadas por coma)</label>
-                    <input type="text" id="link-tags" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: busqueda, google, utilidades">
+                    <input type="text" id="link-tags" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Ej: busqueda, google, utilidades">
                 </div>
                 <div>
                     <label for="link-category" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Categoría</label>
-                    <select id="link-category" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" required>
-                    </select>
+                    <select id="link-category" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" required>
+                        </select>
                 </div>
                 <div id="link-error" class="text-red-500 dark:text-red-400 text-sm pt-2 hidden"></div>
                 <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" class="modal-close-btn bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Guardar</button>
+                    <button type="button" class="modal-close-btn bg-gray-200 hover:bg-gray-300 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 hover:bg-blue-700 dark:bg-gradient-to-r dark:from-blue-500 dark:to-purple-600 dark:hover:from-blue-600 dark:hover:to-purple-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Guardar</button>
                 </div>
             </form>
         </div>
     </div>
 
-    <div id="undo-toast" class="fixed bottom-6 left-6 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 p-4 rounded-lg shadow-lg flex items-center gap-4 z-50">
+    <div id="undo-toast" class="fixed bottom-6 left-6 bg-gray-800 border border-gray-700 text-white dark:bg-gray-200 dark:border-gray-300 dark:text-gray-900 p-4 rounded-lg shadow-lg flex items-center gap-4 z-50">
         <span class="font-medium">Enlace eliminado.</span>
-        <button id="undo-btn" class="font-bold text-accent-400 dark:text-accent-600 hover:text-accent-300 dark:hover:text-accent-500">Deshacer</button>
+        <button id="undo-btn" class="font-bold text-cyan-400 dark:text-blue-600 hover:text-cyan-300 dark:hover:text-blue-500">Deshacer</button>
     </div>
 
-    <button id="back-to-top-btn" class="hidden fixed bottom-6 right-6 bg-accent-500 hover:bg-accent-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-opacity duration-300 z-40">
+    <button id="back-to-top-btn" class="hidden fixed bottom-6 right-6 bg-blue-600 hover:bg-blue-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-opacity duration-300 z-40">
         <ion-icon name="arrow-up-outline" class="text-2xl"></ion-icon>
     </button>
 
@@ -204,105 +171,62 @@
             const STORAGE_KEY_ORDER = 'dinamicBookmarksOrder';
             const STORAGE_KEY_THEME = 'dinamicBookmarksTheme';
             
-            
-            // --- ¡¡¡TUS DATOS PREDETERMINADOS!!! ---
-            const DEFAULT_BOOKMARKS = {
+            const DEFAULT_DATA = {
                 "🔎 Búsqueda y Noticias": [
-                    {"title": "Google", "url": "https://www.google.com", "description": "Buscador web", "tags": []},
-                    {"title": "La Nueva", "url": "https://www.lanueva.com/", "description": "Noticias Locales y de la Argentina", "tags": []},
-                    {"title": "La Brújula", "url": "https://www.labrujula24.com/", "description": "Noticias Locales y de la Argentina", "tags": []},
-                    {"title": "Infobae", "url": "https://www.infobae.com/", "description": "Infobae", "tags": []},
-                    {"title": "DuckDuckGo", "url": "https://duckduckgo.com", "description": "Un buscador enfocado en la privacidad que no rastrea tu historial de búsqueda.", "tags": ["busqueda", "privacidad", "motor"]},
-                    {"title": "Google News", "url": "https://news.google.com", "description": "Agregador de noticias de Google, personalizado según tus intereses.", "tags": ["noticias", "google", "agregador"]},
-                    {"title": "Feedly", "url": "https://feedly.com", "description": "Lector de RSS para seguir blogs y sitios de noticias en un solo lugar.", "tags": ["rss", "noticias", "blogs", "tecnologia"]}
+                    { title: "Google", url: "https://www.google.com", description: "Buscador web", tags: ["busqueda", "google"] },
+                    { title: "La Nueva", url: "https://www.lanueva.com/", description: "Noticias Locales y de la Argentina", tags: ["noticias", "local"] },
+                    { title: "La Brújula", url: "https://www.labrujula24.com/", description: "Noticias Locales y de la Argentina", tags: ["noticias", "local"] }
                 ],
                 "🎬 Entretenimiento": [
-                    {"title": "YouTube", "url": "https://www.youtube.com", "description": "Plataforma de videos", "tags": []},
-                    {"title": "TikTok", "url": "https://www.tiktok.com/es/", "description": "Videos cortos", "tags": []},
-                    {"title": "Twitch", "url": "https://www.twitch.tv/", "description": "Twitch", "tags": []},
-                    {"title": "Spotify (Web Player)", "url": "https://open.spotify.com", "description": "Escucha música y podcasts directamente desde el navegador.", "tags": ["musica", "podcast", "streaming"]},
-                    {"title": "Reddit", "url": "https://www.reddit.com", "description": "La \"portada de internet\". Foros y comunidades (subreddits) sobre cualquier tema.", "tags": ["comunidad", "foros", "noticias"]},
-                    {"title": "Letterboxd", "url": "https://letterboxd.com", "description": "Red social para cinéfilos. Registra, califica y descubre películas.", "tags": ["cine", "peliculas", "social"]}
-                ],
-                "💬 Redes Sociales": [
-                    {"title": "Twitter / X", "url": "https://twitter.com", "description": "Red social de noticias y tendencias", "tags": []},
-                    {"title": "Facebook", "url": "https://www.facebook.com", "description": "Red social para compartir con amigos", "tags": []},
-                    {"title": "Instagram", "url": "https://www.instagram.com", "description": "Fotos, videos y contenido de creadores", "tags": []},
-                    {"title": "WhatsApp Web", "url": "https://web.whatsapp.com", "description": "Usa WhatsApp directamente desde tu computadora.", "tags": ["chat", "mensajeria", "social"]},
-                    {"title": "LinkedIn", "url": "https://www.linkedin.com", "description": "Red social profesional para networking, perfiles de trabajo y noticias del sector.", "tags": ["profesional", "trabajo", "networking"]},
-                    {"title": "Discord", "url": "https://discord.com/app", "description": "Plataforma de chat por voz, video y texto para comunidades.", "tags": ["chat", "comunidad", "gaming"]}
-                ],
-                "👨‍💻 Tecnología / Trabajo": [
-                    {"title": "GitHub", "url": "https://github.com", "description": "Repositorio y colaboración de proyectos de código", "tags": []},
-                    {"title": "Gmail", "url": "https://mail.google.com/mail/u/0/#inbox", "description": "Correo electrónico de Google", "tags": []},
-                    {"title": "Google Calendar", "url": "https://calendar.google.com", "description": "Calendario y eventos online", "tags": []},
-                    {"title": "Notion", "url": "https://www.notion.so", "description": "Espacio de trabajo todo-en-uno para notas, tareas, wikis y bases de datos.", "tags": ["productividad", "notas", "wiki"]},
-                    {"title": "Google Drive", "url": "https://drive.google.com", "description": "Almacenamiento en la nube, documentos, hojas de cálculo y presentaciones de Google.", "tags": ["nube", "docs", "google", "oficina"]},
-                    {"title": "Trello", "url": "https://trello.com", "description": "Herramienta visual de gestión de proyectos estilo Kanban (tableros y tarjetas).", "tags": ["productividad", "kanban", "proyectos"]}
+                    { title: "YouTube", url: "https://www.youtube.com", description: "Plataforma de videos", tags: ["videos", "musica"] },
+                    { title: "Twitch", url: "https://www.twitch.tv", description: "Streaming en vivo", tags: ["streaming", "gaming"] }
                 ],
                 "🤖 Inteligencia Artificial": [
-                    {"title": "ChatGPT", "url": "https://chat.openai.com", "description": "Chat de IA de OpenAI", "tags": []},
-                    {"title": "Perplexity", "url": "https://www.perplexity.ai/?login-source=oneTapHome&login-new=false", "description": "Buscador con IA", "tags": []},
-                    {"title": "Gemini", "url": "https://gemini.google.com", "description": "Gemini", "tags": []},
-                    {"title": "Claude", "url": "https://claude.ai", "description": "Modelo de IA conversacional de Anthropic, gran competidor de ChatGPT.", "tags": ["ia", "chatbot", "anthropic"]},
-                    {"title": "Poe", "url": "https://poe.com", "description": "Plataforma para chatear con múltiples bots de IA (ChatGPT, Claude, etc.) en un solo lugar.", "tags": ["ia", "chatbot", "agregador"]},
-                    {"title": "Midjourney", "url": "https://www.midjourney.com", "description": "El generador de imágenes por IA más potente (se usa a través de Discord).", "tags": ["ia", "imagenes", "generador"]}
+                    { title: "ChatGPT", url: "https://chat.openai.com", description: "Chat de IA de OpenAI", tags: ["ia", "chatbot", "openai"] },
+                    { title: "Perplexity", url: "https://www.perplexity.ai/", description: "Buscador con IA", tags: ["ia", "busqueda"] }
                 ],
                 "🧠 Programación": [
-                    {"title": "Hugging Face", "url": "https://huggingface.co", "description": "Modelos de IA, datasets y herramientas colaborativas", "tags": []},
-                    {"title": "Kaggle", "url": "https://www.kaggle.com", "description": "Competencias de IA, análisis de datos y notebooks", "tags": []},
-                    {"title": "freeCodeCamp", "url": "https://www.freecodecamp.org", "description": "Cursos gratuitos interactivos de HTML, CSS, JS y más", "tags": []},
-                    {"title": "W3Schools", "url": "https://www.w3schools.com", "description": "Tutoriales fáciles de HTML, CSS, JavaScript y más", "tags": []},
-                    {"title": "MDN Web Docs", "url": "https://developer.mozilla.org/es/", "description": "Documentación oficial y ejemplos de HTML, CSS y JS", "tags": []},
-                    {"title": "JavaScript Info", "url": "https://javascript.info", "description": "Guía completa y clara para aprender JavaScript", "tags": []},
-                    {"title": "Codecademy", "url": "https://www.codecademy.com", "description": "Cursos prácticos de programación interactivos", "tags": []},
-                    {"title": "SoloLearn", "url": "https://www.sololearn.com", "description": "Aprendé programación desde el celu o la compu con lecciones cortas", "tags": []},
-                    {"title": "GeeksForGeeks", "url": "https://www.geeksforgeeks.org", "description": "Ejemplos, ejercicios y teoría de programación", "tags": []},
-                    {"title": "Stack Overflow", "url": "https://www.stackoverflow.com", "description": "Preguntá y buscá soluciones a problemas de código", "tags": []},
-                    {"title": "Figma", "url": "https://www.figma.com", "description": "Herramienta de diseño de interfaces (UI/UX) colaborativa basada en la web.", "tags": ["diseño", "ui", "ux", "frontend"]},
-                    {"title": "CodePen", "url": "https://codepen.io", "description": "Patio de juegos online para probar y mostrar snippets de HTML, CSS y JavaScript.", "tags": ["frontend", "css", "js", "html", "demo"]},
-                    {"title": "Replit", "url": "https://replit.com", "description": "IDE completo en la nube para programar, compilar y alojar proyectos en cualquier lenguaje.", "tags": ["ide", "nube", "programacion", "backend"]}
-                ],
-                "Descargas para Mac": [
-                    {"title": "nMac.to", "url": "https://nmac.to/now/", "description": "nMac.to", "tags": []},
-                    {"title": "MacTorrents", "url": "https://www.torrentmac.net/", "description": "MacTorrents", "tags": []}
+                    { title: "MDN Web Docs", url: "https://developer.mozilla.org/es/", description: "Documentación oficial y ejemplos de HTML, CSS y JS", tags: ["js", "css", "html", "docs"] },
+                    { title: "Stack Overflow", url: "https://www.stackoverflow.com", description: "Preguntá y buscá soluciones a problemas de código", tags: ["dev", "q&a"] }
                 ]
             };
-            const DEFAULT_ORDER = [
-                "🔎 Búsqueda y Noticias", "🎬 Entretenimiento", "💬 Redes Sociales", "👨‍💻 Tecnología / Trabajo", "🤖 Inteligencia Artificial", "🧠 Programación", "Descargas para Mac"
-            ];
-            // -----------------------------------------------
 
             // --- Elementos del DOM ---
-            const elements = {
-                categoriesContainer: document.getElementById('categories-container'),
-                categoryModal: document.getElementById('category-modal'),
-                linkModal: document.getElementById('link-modal'),
-                modalCloseBtns: document.querySelectorAll('.modal-close-btn'),
-                categoryForm: document.getElementById('category-form'),
-                categoryModalTitle: document.getElementById('category-modal-title'),
-                linkForm: document.getElementById('link-form'),
-                linkModalTitle: document.getElementById('link-modal-title'),
-                categoryNameInput: document.getElementById('category-name'),
-                linkTitleInput: document.getElementById('link-title'),
-                linkUrlInput: document.getElementById('link-url'),
-                linkCategorySelect: document.getElementById('link-category'),
-                linkDescriptionInput: document.getElementById('link-description'),
-                linkTagsInput: document.getElementById('link-tags'),
-                addCategoryBtn: document.getElementById('add-category-btn'),
-                addLinkBtn: document.getElementById('add-link-btn'),
-                categoryError: document.getElementById('category-error'),
-                linkError: document.getElementById('link-error'),
-                undoToast: document.getElementById('undo-toast'),
-                undoBtn: document.getElementById('undo-btn'),
-                searchInput: document.getElementById('search-input'),
-                importBtn: document.getElementById('import-btn'),
-                exportBtn: document.getElementById('export-btn'),
-                importFileInput: document.getElementById('import-file'),
-                themeToggleBtn: document.getElementById('theme-toggle-btn'),
-                themeIcon: document.getElementById('theme-toggle-btn').querySelector('ion-icon'),
-                backToTopBtn: document.getElementById('back-to-top-btn')
-            };
+            const categoriesContainer = document.getElementById('categories-container');
+            const categoryModal = document.getElementById('category-modal');
+            const linkModal = document.getElementById('link-modal');
+            const modalCloseBtns = document.querySelectorAll('.modal-close-btn');
+            const categoryForm = document.getElementById('category-form');
+            const categoryModalTitle = document.getElementById('category-modal-title');
+            const linkForm = document.getElementById('link-form');
+            const linkModalTitle = document.getElementById('link-modal-title');
+            const categoryNameInput = document.getElementById('category-name');
+            const linkTitleInput = document.getElementById('link-title');
+            const linkUrlInput = document.getElementById('link-url');
+            const linkCategorySelect = document.getElementById('link-category');
+            const linkDescriptionInput = document.getElementById('link-description');
+            const linkTagsInput = document.getElementById('link-tags');
+            const addCategoryBtn = document.getElementById('add-category-btn');
+            const addLinkBtn = document.getElementById('add-link-btn');
+            const categoryError = document.getElementById('category-error');
+            const linkError = document.getElementById('link-error');
+            const undoToast = document.getElementById('undo-toast');
+            const undoBtn = document.getElementById('undo-btn');
+            const searchInput = document.getElementById('search-input');
+            const importBtn = document.getElementById('import-btn');
+            const exportBtn = document.getElementById('export-btn');
+            const importFileInput = document.getElementById('import-file');
+            const themeToggleBtn = document.getElementById('theme-toggle-btn');
+            const themeIcon = themeToggleBtn.querySelector('ion-icon');
+            const backToTopBtn = document.getElementById('back-to-top-btn');
+
+            // --- Elementos del DOM para Menú Móvil (¡Y AHORA ESCRITORIO!) ---
+            const hamburgerBtn = document.getElementById('hamburger-btn'); // Botón móvil
+            const desktopHamburgerBtn = document.getElementById('desktop-hamburger-btn'); // ¡NUEVO! Botón escritorio
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileMenuCloseBtn = document.getElementById('mobile-menu-close-btn');
+            const mobileMenuOverlay = document.getElementById('mobile-menu-overlay');
+            const mobileMenuContent = document.getElementById('mobile-menu-content');
 
             // --- Estado de la Aplicación ---
             let bookmarksData = {};
@@ -311,40 +235,76 @@
             let undoTimeout = null; 
             let editState = null; 
 
-            // --- Funciones de Datos (migrate, load, save) ---
+            
+            // --- ¡¡¡NUEVA FUNCIÓN!!! ---
+            /**
+             * Asegura que los datos en memoria (bookmarksData, categoryOrder)
+             * tengan la estructura moderna (con 'tags', 'description', etc.)
+             */
             function migrateData() {
                 let needsSave = false;
+                // Itera sobre el orden para mantener la consistencia
                 categoryOrder.forEach(category => {
                     if (bookmarksData[category]) {
+                        // Migra cada enlace dentro de la categoría
                         bookmarksData[category].forEach(link => {
-                            if (link.description === undefined) { link.description = ""; needsSave = true; }
-                            if (link.tags === undefined) { link.tags = []; needsSave = true; }
+                            if (link.description === undefined) {
+                                link.description = ""; 
+                                needsSave = true;
+                            }
+                            if (link.tags === undefined) {
+                                link.tags = []; 
+                                needsSave = true;
+                            }
                         });
                     } else {
+                        // Limpieza: si una categoría está en el orden pero no en los datos, quitarla
                         categoryOrder = categoryOrder.filter(c => c !== category);
                         needsSave = true;
                     }
                 });
+                
+                // Limpieza: Si hay categorías en datos que no están en el orden (de una mala importación)
                 for (const categoryName in bookmarksData) {
                     if (!categoryOrder.includes(categoryName)) {
-                        categoryOrder.push(categoryName);
+                        categoryOrder.push(categoryName); // Añadirla al final
                         needsSave = true;
                     }
                 }
-                if (needsSave) { saveData(); }
-            }
 
+                if (needsSave) {
+                    saveData(); // Guarda la estructura de datos actualizada
+                }
+            }
+            
+            // --- ¡¡¡FUNCIÓN MODIFICADA!!! ---
+            /**
+             * Carga los datos desde localStorage Y LUEGO los migra.
+             */
             function loadData() {
                 const savedData = localStorage.getItem(STORAGE_KEY_BOOKMARKS);
                 const savedOrder = localStorage.getItem(STORAGE_KEY_ORDER);
-                bookmarksData = savedData ? JSON.parse(savedData) : DEFAULT_BOOKMARKS;
-                categoryOrder = savedOrder ? JSON.parse(savedOrder) : DEFAULT_ORDER;
-                if (!savedData && !savedOrder) {
+
+                if (savedData) {
+                    bookmarksData = JSON.parse(savedData);
+                }
+
+                if (savedOrder) {
+                    categoryOrder = JSON.parse(savedOrder);
+                } else if (savedData) {
+                    // Migración de versión antigua (solo datos, sin orden)
+                    categoryOrder = Object.keys(bookmarksData);
+                } else {
+                    // Carga por primera vez
+                    bookmarksData = DEFAULT_DATA;
+                    categoryOrder = Object.keys(DEFAULT_DATA);
                     saveData(); 
                 }
+                
+                // Llama a la nueva función de migración
                 migrateData();
             }
-            
+
             function saveData() {
                 localStorage.setItem(STORAGE_KEY_BOOKMARKS, JSON.stringify(bookmarksData));
                 localStorage.setItem(STORAGE_KEY_ORDER, JSON.stringify(categoryOrder));
@@ -354,22 +314,76 @@
                 try {
                     const parsedUrl = new URL(url);
                     return parsedUrl.hostname.replace('www.', '');
-                } catch (e) { return 'enlace.com'; }
+                } catch (e) {
+                    return 'google.com';
+                }
+            }
+
+            // --- ¡¡¡NUEVA FUNCIÓN!!! ---
+            /**
+             * Renderiza el contenido del menú móvil.
+             */
+            function renderMobileMenu() {
+                mobileMenuContent.innerHTML = ''; // Limpia el contenido anterior
+
+                if (categoryOrder.length === 0) {
+                    mobileMenuContent.innerHTML = `<p class="p-4 text-center text-gray-500 dark:text-gray-400">No hay categorías.</p>`;
+                    return;
+                }
+
+                categoryOrder.forEach(categoryName => {
+                    if (!bookmarksData[categoryName]) return;
+                    const links = bookmarksData[categoryName];
+
+                    // Añade el título de la categoría
+                    const categoryTitle = document.createElement('h3');
+                    categoryTitle.className = 'p-4 text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider';
+                    categoryTitle.textContent = categoryName;
+                    mobileMenuContent.appendChild(categoryTitle);
+
+                    // Crea la lista de enlaces
+                    const linkList = document.createElement('ul');
+                    linkList.className = 'mb-2';
+                    
+                    if (links.length > 0) {
+                        links.forEach(link => {
+                            const domain = getDomain(link.url);
+                            const faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${domain}`;
+
+                            const linkItem = document.createElement('li');
+                            linkItem.innerHTML = `
+                                <a href="${link.url}" target="_blank" class="flex items-center gap-3 py-2 px-4 text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md mx-2 transition-colors duration-150">
+                                    <div class="w-5 h-5 flex-shrink-0">
+                                        <img src="${faviconUrl}" alt="" class="w-5 h-5 rounded-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="w-5 h-5 rounded-sm bg-gray-200 dark:bg-gray-700 items-center justify-center text-gray-500 dark:text-gray-400" style="display: none;">
+                                            <ion-icon name="globe-outline" class="text-sm"></ion-icon>
+                                        </div>
+                                    </div>
+                                    <span class="truncate" title="${link.title}">${link.title}</span>
+                                </a>
+                            `;
+                            linkList.appendChild(linkItem);
+                        });
+                    } else {
+                        linkList.innerHTML = `<li class="px-4 py-2 text-gray-500 dark:text-gray-400 italic text-sm">No hay enlaces.</li>`;
+                    }
+                    mobileMenuContent.appendChild(linkList);
+                });
             }
             
-            // --- NUEVA FUNCIÓN RENDER (MINIMALISTA) ---
             function renderPage() {
-                elements.categoriesContainer.innerHTML = ''; 
+                categoriesContainer.innerHTML = ''; 
                 hideUndoToast();
 
                 if (categoryOrder.length === 0) {
-                    elements.categoriesContainer.innerHTML = `
+                    categoriesContainer.innerHTML = `
                         <div class="text-center text-gray-500 dark:text-gray-400 py-20">
-                            <ion-icon name="rocket-outline" class="text-6xl text-accent-500"></ion-icon>
-                            <h2 class="text-2xl font-semibold mt-4">Plataforma de lanzamiento vacía</h2>
+                            <ion-icon name="rocket-outline" class="text-6xl text-indigo-600 dark:text-indigo-500"></ion-icon>
+                            <h2 class="text-2xl font-semibold mt-4">¡Plataforma de lanzamiento vacía!</h2>
                             <p class="mt-2">Añade una categoría o importa tu copia de seguridad.</p>
                         </div>
                     `;
+                    renderMobileMenu(); // <-- Asegúrate de renderizar el menú también
                     return;
                 }
 
@@ -381,87 +395,77 @@
                     categoryEl.className = 'category-section';
                     
                     categoryEl.innerHTML = `
-                        <div class="category-header group flex justify-between items-center mb-3">
-                            <div class="flex items-center gap-2">
-                                <div class="category-drag-handle cursor-move text-gray-400 dark:text-gray-600 p-1" title="Mover categoría">
-                                    <ion-icon name="reorder-two-outline" class="text-2xl"></ion-icon>
-                                </div>
-                                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">${categoryName} 
-                                    <span class="text-xl font-medium text-gray-500 dark:text-gray-400">(${links.length})</span>
+                        <div class="category-header flex justify-between items-center mb-4 group">
+                            <div class="flex items-center gap-3">
+                                <h2 class="text-3xl font-semibold text-gray-800 dark:text-transparent dark:bg-clip-text dark:bg-gradient-to-r dark:from-cyan-300 dark:to-blue-400 pb-2">
+                                    ${categoryName}
+                                    <span class="text-xl font-normal text-gray-400 dark:text-gray-500">(${links.length})</span>
                                 </h2>
-                            </div>
-                            <div class="category-actions flex items-center gap-2 text-gray-500">
-                                <button class="edit-category-btn hover:text-accent-500 p-1" data-category="${categoryName}" title="Renombrar categoría">
-                                    <ion-icon name="pencil-outline" class="text-lg"></ion-icon>
-                                </button>
-                                <button class="delete-category-btn hover:text-red-500 p-1" data-category="${categoryName}" title="Eliminar categoría">
-                                    <ion-icon name="trash-outline" class="text-lg"></ion-icon>
+                                <button class="edit-category-btn text-gray-500 hover:text-cyan-500 dark:hover:text-cyan-400 transition-colors" data-category="${categoryName}" title="Renombrar categoría">
+                                    <ion-icon name="pencil-outline" class="text-xl"></ion-icon>
                                 </button>
                             </div>
+                            <button class="delete-category-btn text-gray-500 dark:text-gray-600 hover:text-red-500 transition-colors" data-category="${categoryName}" title="Eliminar categoría">
+                                <ion-icon name="trash-outline" class="text-xl"></ion-icon>
+                            </button>
                         </div>
-                        <ul class="links-list border border-gray-200 dark:border-gray-800 rounded-lg overflow-hidden">
-                            </ul>
+                        <div class="links-grid grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4" data-category="${categoryName}">
+                        </div>
                     `;
 
-                    const linksList = categoryEl.querySelector('.links-list');
+                    const linksGrid = categoryEl.querySelector('.links-grid');
 
                     if (links.length > 0) {
                         links.forEach((link, index) => {
                             const domain = getDomain(link.url);
                             const faviconUrl = `https://www.google.com/s2/favicons?sz=32&domain=${domain}`;
                             const tagsHTML = (link.tags || []).map(tag => 
-                                `<span class="link-tag-span text-xs font-medium bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300 px-2 py-0.5 rounded-full">${tag}</span>`
+                                `<span class="link-tag-span text-xs font-medium bg-indigo-100 text-indigo-800 dark:bg-indigo-500/30 dark:text-indigo-300 px-2 py-0.5 rounded-full">${tag}</span>`
                             ).join('');
 
-                            const faviconHTML = `
-                                <div class="w-5 h-5 flex-shrink-0">
-                                    <img src="${faviconUrl}" alt="" class="w-5 h-5 rounded-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                                    <div class="w-5 h-5 rounded-sm bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500" style="display: none;">
-                                        <ion-icon name="globe-outline" class="text-sm"></ion-icon>
-                                    </div>
-                                </div>
-                            `;
-                            
-                            const linkEl = document.createElement('li');
-                            linkEl.className = "link-item group flex items-center justify-between p-3.5 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors";
+                            const linkEl = document.createElement('a');
+                            linkEl.href = link.url;
+                            linkEl.target = '_blank';
+                            linkEl.title = link.description || link.title; 
+                            linkEl.className = 'link-item bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 hover:border-indigo-500 dark:hover:border-indigo-500 hover:bg-gray-50 dark:hover:bg-gray-700/50 rounded-lg p-4 flex items-start gap-4 transition-all relative group shadow-md dark:shadow-lg hover:shadow-lg hover:dark:shadow-indigo-500/30 hover:-translate-y-1 duration-300';
                             
                             linkEl.innerHTML = `
-                                <div class="flex items-center gap-3 flex-1 min-w-0">
-                                    <div class="link-drag-handle cursor-move text-gray-400 dark:text-gray-500" title="Mover enlace">
-                                        <ion-icon name="reorder-two-outline" class="text-2xl"></ion-icon>
+                                <div class="w-6 h-6 flex-shrink-0 mt-1">
+                                    <img src="${faviconUrl}" alt="${link.title} favicon" class="w-6 h-6 rounded-sm" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="w-6 h-6 rounded-sm bg-gray-200 dark:bg-gray-700 items-center justify-center text-gray-500 dark:text-gray-400" style="display: none;">
+                                        <ion-icon name="globe-outline"></ion-icon>
                                     </div>
-                                    ${faviconHTML}
-                                    <a href="${link.url}" target="_blank" class="flex-1 min-w-0" title="${link.description || link.title}">
-                                        <div class="link-title font-medium text-gray-900 dark:text-gray-100 truncate">${link.title}</div>
-                                        <div class="link-url text-sm text-gray-500 dark:text-gray-400 truncate">${link.url.replace('https://', '').replace('www.', '')}</div>
-                                    </a>
                                 </div>
-                                <div class="flex items-center gap-4 pl-2">
-                                    <div class="hidden md:flex flex-wrap gap-1.5">${tagsHTML}</div>
-                                    <div class="link-actions flex gap-1 text-gray-500">
-                                        <button class="edit-link-btn hover:text-accent-500 p-1" data-category="${categoryName}" data-index="${index}" title="Editar enlace">
-                                            <ion-icon name="pencil-outline" class="text-lg"></ion-icon>
-                                        </button>
-                                        <button class="delete-link-btn hover:text-red-500 p-1" data-category="${categoryName}" data-index="${index}" title="Eliminar enlace">
-                                            <ion-icon name="close-outline" class="text-lg"></ion-icon>
-                                        </button>
+                                <div class="flex-grow overflow-hidden">
+                                    <span class="link-title-span text-gray-900 dark:text-gray-100 font-medium truncate block">${link.title}</span>
+                                    <div class="flex flex-wrap gap-1 mt-2">
+                                        ${tagsHTML}
                                     </div>
+                                </div>
+                                <div class="link-actions absolute top-2 right-2 flex gap-1">
+                                    <button class="edit-link-btn bg-blue-500/70 backdrop-blur-sm hover:bg-blue-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs" 
+                                            data-category="${categoryName}" data-index="${index}" title="Editar enlace">
+                                        <ion-icon name="pencil-outline" class="text-sm"></ion-icon>
+                                    </button>
+                                    <button class="delete-link-btn bg-red-600/70 backdrop-blur-sm hover:bg-red-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-xs" 
+                                            data-category="${categoryName}" data-index="${index}" title="Eliminar enlace">
+                                        <ion-icon name="close-outline" class="text-sm"></ion-icon>
+                                    </button>
                                 </div>
                             `;
-                            linksList.appendChild(linkEl);
+                            linksGrid.appendChild(linkEl);
                         });
                     } else {
-                        linksList.innerHTML = `<li class="p-4 text-gray-500 dark:text-gray-400 italic text-sm">No hay enlaces en esta categoría.</li>`;
+                        linksGrid.innerHTML = `<p class="text-gray-500 dark:text-gray-400 col-span-full italic">No hay enlaces en esta categoría.</p>`;
                     }
 
-                    elements.categoriesContainer.appendChild(categoryEl);
+                    categoriesContainer.appendChild(categoryEl);
 
                     // SortableJS para ENLACES
-                    new Sortable(linksList, {
+                    new Sortable(linksGrid, {
                         animation: 150,
                         ghostClass: 'sortable-ghost', 
                         draggable: '.link-item',
-                        handle: '.link-drag-handle',
                         onEnd: (evt) => {
                             const category = evt.from.dataset.category;
                             const [movedItem] = bookmarksData[category].splice(evt.oldIndex, 1);
@@ -473,11 +477,11 @@
                 });
 
                 // SortableJS para CATEGORÍAS
-                new Sortable(elements.categoriesContainer, {
+                new Sortable(categoriesContainer, {
                     animation: 150,
                     ghostClass: 'sortable-ghost',
                     draggable: '.category-section', 
-                    handle: '.category-drag-handle',
+                    handle: '.category-header', 
                     onEnd: (evt) => {
                         const [movedItem] = categoryOrder.splice(evt.oldIndex, 1);
                         categoryOrder.splice(evt.newIndex, 0, movedItem);
@@ -486,66 +490,291 @@
                 });
 
                 updateCategorySelect();
+                
+                // --- ¡¡¡MODIFICACIÓN!!! ---
+                // Renderiza el menú móvil CADA VEZ que la página se renderiza
+                renderMobileMenu(); 
             }
 
-            // --- Resto de funciones (sin cambios) ---
-            function updateCategorySelect(){elements.linkCategorySelect.innerHTML='';let e=elements.linkCategorySelect.value;categoryOrder.forEach(t=>{const n=document.createElement("option");n.value=t,n.textContent=t,elements.linkCategorySelect.appendChild(n)}),categoryOrder.includes(e)&&(elements.linkCategorySelect.value=e)}
-            function showModal(e){hideErrorMessages(),e.classList.add("flex")}
-            function hideModal(e){e.classList.remove("flex"),elements.categoryForm.reset(),elements.linkForm.reset(),editState=null,elements.categoryModalTitle.textContent="Crear Nueva Categoría",elements.linkModalTitle.textContent="Añadir Nuevo Enlace"}
-            function hideErrorMessages(){elements.categoryError.classList.add("hidden"),elements.linkError.classList.add("hidden")}
-            function showUndoToast(e,t,n){clearTimeout(undoTimeout),undoState={category:e,index:t,linkData:n},elements.undoToast.classList.add("show"),undoTimeout=setTimeout(hideUndoToast,5e3)}
-            function hideUndoToast(){elements.undoToast.classList.remove("show"),undoState=null,clearTimeout(undoTimeout)}
-            function handleUndoClick(){if(!undoState)return;const{category:e,index:t,linkData:n}=undoState;bookmarksData[e].splice(t,0,n),saveData(),renderPage(),hideUndoToast()}
-            function showEditCategoryModal(e){editState={type:"category",oldName:e},elements.categoryNameInput.value=e,elements.categoryModalTitle.textContent="Renombrar Categoría",showModal(elements.categoryModal)}
-            function showEditLinkModal(e,t){editState={type:"link",category:e,index:t};const n=bookmarksData[e][t];elements.linkTitleInput.value=n.title,elements.linkUrlInput.value=n.url,elements.linkDescriptionInput.value=n.description||"",elements.linkTagsInput.value=(n.tags||[]).join(", "),updateCategorySelect(),elements.linkCategorySelect.value=e,elements.linkModalTitle.textContent="Editar Enlace",showModal(elements.linkModal)}
-            function handleSearch(){const e=elements.searchInput.value.toLowerCase();document.querySelectorAll(".category-section").forEach(t=>{let n=!1;const o=t.querySelectorAll(".link-item");o.length>0?o.forEach(t=>{const o=(t.querySelector(".link-title")?.textContent||"").toLowerCase(),a=(t.title||"").toLowerCase(),i=Array.from(t.querySelectorAll(".link-tag-span")).map(e=>e.textContent.toLowerCase()).join(" "),c=`${o} ${a} ${i}`;c.includes(e)?(t.classList.remove("hidden"),n=!0):t.classList.add("hidden")}):n=!1,n||""===e||t.querySelector("h2").textContent.toLowerCase().includes(e)?t.classList.remove("hidden"):t.classList.add("hidden")})}
-            function exportData(){const e={bookmarks:bookmarksData,order:categoryOrder},t=JSON.stringify(e,null,2),n=new Blob([t],{type:"application/json"}),o=URL.createObjectURL(n),a=document.createElement("a");a.href=o,a.download="favoritos_backup.json",a.click(),URL.revokeObjectURL(o)}
-            function importData(e){const t=e.target.files[0];if(!t)return;const n=new FileReader;n.onload=e=>{let t="replace";try{const n=JSON.parse(e.target.result);if(!n.bookmarks||!n.order)throw new Error("El archivo no tiene el formato correcto.");confirm('¿Quieres COMBINAR los enlaces del archivo con los actuales? \n\n(Presiona "Cancelar" para REEMPLAZAR todo).')?(t="merge",Object.keys(n.bookmarks).forEach(e=>{bookmarksData.hasOwnProperty(e)?n.bookmarks[e].forEach(t=>{bookmarksData[e].some(e=>e.url===t.url)||bookmarksData[e].push(t)}):(bookmarksData[e]=n.bookmarks[e],categoryOrder.includes(e)||categoryOrder.push(e))})):(t="replace",bookmarksData=n.bookmarks,categoryOrder=n.order),migrateData(),saveData(),renderPage(),"merge"===t?alert("¡Enlaces combinados con éxito!"):alert("¡Importación (reemplazo) exitosa!")}catch(e){alert("Error: "+e.message)}elements.importFileInput.value=""},n.readAsText(t)}
-            function applyTheme(e){"light"===e?(document.documentElement.classList.remove("dark"),elements.themeIcon.setAttribute("name","moon-outline")):(document.documentElement.classList.add("dark"),elements.themeIcon.setAttribute("name","sunny-outline")),localStorage.setItem(STORAGE_KEY_THEME,e)}
-            function toggleTheme(){const e=document.documentElement.classList.contains("dark")?"dark":"light";applyTheme("dark"===e?"light":"dark")}
-            function handleScroll(){window.scrollY>300?(elements.backToTopBtn.classList.remove("hidden"),elements.backToTopBtn.classList.add("flex")):(elements.backToTopBtn.classList.add("hidden"),elements.backToTopBtn.classList.remove("flex"))}
+            function updateCategorySelect() {
+                linkCategorySelect.innerHTML = ''; 
+                let selectedCategory = linkCategorySelect.value;
+                categoryOrder.forEach(categoryName => {
+                    const option = document.createElement('option');
+                    option.value = categoryName;
+                    option.textContent = categoryName;
+                    linkCategorySelect.appendChild(option);
+                });
+                if (categoryOrder.includes(selectedCategory)) {
+                    linkCategorySelect.value = selectedCategory;
+                }
+            }
+
+            // --- Funciones de Modales ---
+            function showModal(modalEl) {
+                hideErrorMessages();
+                modalEl.classList.add('flex');
+            }
+            function hideModal(modalEl) {
+                modalEl.classList.remove('flex');
+                categoryForm.reset();
+                linkForm.reset();
+                editState = null;
+                categoryModalTitle.textContent = 'Crear Nueva Categoría';
+                linkModalTitle.textContent = 'Añadir Nuevo Enlace';
+            }
+            function hideErrorMessages() {
+                categoryError.classList.add('hidden');
+                linkError.classList.add('hidden');
+            }
+
+            // --- ¡¡¡NUEVAS FUNCIONES!!! ---
+            // --- Funciones del Menú Móvil ---
+            function showMobileMenu() {
+                mobileMenuOverlay.classList.remove('hidden');
+                mobileMenu.classList.remove('-translate-x-full');
+                mobileMenu.classList.add('translate-x-0');
+            }
+            function hideMobileMenu() {
+                mobileMenuOverlay.classList.add('hidden');
+                mobileMenu.classList.add('-translate-x-full');
+                mobileMenu.classList.remove('translate-x-0');
+            }
+            // --- Fin de Nuevas Funciones ---
+
+
+            // --- Funciones del Toast de Deshacer ---
+            function showUndoToast(category, index, linkData) {
+                clearTimeout(undoTimeout);
+                undoState = { category, index, linkData };
+                undoToast.classList.add('show');
+                undoTimeout = setTimeout(hideUndoToast, 5000);
+            }
+            function hideUndoToast() {
+                undoToast.classList.remove('show');
+                undoState = null;
+                clearTimeout(undoTimeout);
+            }
+            function handleUndoClick() {
+                if (!undoState) return; 
+                const { category, index, linkData } = undoState;
+                bookmarksData[category].splice(index, 0, linkData);
+                saveData();
+                renderPage(); 
+                hideUndoToast(); 
+            }
+
+            // --- Funciones de Edición ---
+            function showEditCategoryModal(oldName) {
+                editState = { type: 'category', oldName: oldName };
+                categoryNameInput.value = oldName;
+                categoryModalTitle.textContent = 'Renombrar Categoría';
+                showModal(categoryModal);
+            }
+            function showEditLinkModal(category, index) {
+                editState = { type: 'link', category: category, index: index };
+                const link = bookmarksData[category][index];
+                linkTitleInput.value = link.title;
+                linkUrlInput.value = link.url;
+                linkDescriptionInput.value = link.description || '';
+                linkTagsInput.value = (link.tags || []).join(', ');
+                updateCategorySelect(); 
+                linkCategorySelect.value = category; 
+                linkModalTitle.textContent = 'Editar Enlace';
+                showModal(linkModal);
+            }
+
+            // --- Funciones de Búsqueda ---
+            function handleSearch() {
+                const searchTerm = searchInput.value.toLowerCase();
+                document.querySelectorAll('.category-section').forEach(categoryEl => {
+                    let categoryHasVisibleLinks = false;
+                    const links = categoryEl.querySelectorAll('.link-item');
+                    links.forEach(linkEl => {
+                        const title = (linkEl.querySelector('.link-title-span')?.textContent || '').toLowerCase();
+                        const description = (linkEl.title || '').toLowerCase();
+                        const tags = Array.from(linkEl.querySelectorAll('.link-tag-span'))
+                                        .map(tag => tag.textContent.toLowerCase())
+                                        .join(' ');
+                        const searchableText = `${title} ${description} ${tags}`;
+                        if (searchableText.includes(searchTerm)) {
+                            linkEl.classList.remove('hidden');
+                            categoryHasVisibleLinks = true;
+                        } else {
+                            linkEl.classList.add('hidden');
+                        }
+                    });
+                    if (categoryHasVisibleLinks || searchTerm === '') {
+                        categoryEl.classList.remove('hidden');
+                    } else {
+                        categoryEl.classList.add('hidden');
+                    }
+                });
+            }
+
+            // --- Funciones de Importar/Exportar ---
+            function exportData() {
+                const backupData = {
+                    bookmarks: bookmarksData,
+                    order: categoryOrder
+                };
+                const jsonString = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'favoritos_backup.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            }
+            
+            // --- ¡¡¡FUNCIÓN CORREGIDA!!! ---
+            function importData(event) {
+                const file = event.target.files[0];
+                if (!file) return;
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    let importMode = 'replace'; // 'replace' o 'merge'
+                    try {
+                        const imported = JSON.parse(e.target.result);
+                        if (!imported.bookmarks || !imported.order) {
+                            throw new Error('El archivo no tiene el formato correcto.');
+                        }
+
+                        // 'Aceptar' = Combinar, 'Cancelar' = Reemplazar
+                        if (confirm('¿Quieres COMBINAR los enlaces del archivo con los actuales? \n\n(Presiona "Cancelar" para REEMPLAZAR todo).')) {
+                            // --- MODO COMBINAR (MERGE) ---
+                            importMode = 'merge';
+                            for (const categoryName in imported.bookmarks) {
+                                if (!bookmarksData.hasOwnProperty(categoryName)) {
+                                    // Categoría nueva, añadirla
+                                    bookmarksData[categoryName] = imported.bookmarks[categoryName];
+                                    if (!categoryOrder.includes(categoryName)) {
+                                        categoryOrder.push(categoryName);
+                                    }
+                                } else {
+                                    // Categoría existente, combinar enlaces
+                                    const newLinks = imported.bookmarks[categoryName];
+                                    newLinks.forEach(newLink => {
+                                        // Evitar duplicados (basado en URL)
+                                        const alreadyExists = bookmarksData[categoryName].some(existingLink => existingLink.url === newLink.url);
+                                        if (!alreadyExists) {
+                                            bookmarksData[categoryName].push(newLink);
+                                        }
+                                    });
+                                }
+                            }
+                        } else {
+                            // --- MODO REEMPLAZAR ---
+                            importMode = 'replace';
+                            bookmarksData = imported.bookmarks;
+                            categoryOrder = imported.order;
+                        }
+                        
+                        // --- ¡¡¡EL ARREGLO ESTÁ AQUÍ!!! ---
+                        
+                        // 1. Migra los datos en memoria (recién combinados o reemplazados)
+                        migrateData(); 
+                        
+                        // 2. Guarda los nuevos datos en localStorage
+                        saveData();    
+                        
+                        // 3. Dibuja la página con los nuevos datos
+                        renderPage();  
+                        
+                        // 4. Muestra la alerta de éxito
+                        if (importMode === 'merge') {
+                            alert('¡Enlaces combinados con éxito!');
+                        } else {
+                            alert('¡Importación (reemplazo) exitosa!');
+                        }
+                        
+                    } catch (err) {
+                        alert('Error: ' + err.message);
+                    }
+                    importFileInput.value = ''; // Resetea el input
+                };
+                reader.readAsText(file);
+            }
+
+            // --- Funciones de Tema ---
+            function applyTheme(theme) {
+                if (theme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    themeIcon.setAttribute('name', 'moon-outline');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    themeIcon.setAttribute('name', 'sunny-outline');
+                }
+                localStorage.setItem(STORAGE_KEY_THEME, theme);
+            }
+            function toggleTheme() {
+                const currentTheme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                applyTheme(newTheme);
+            }
+            
+            // --- Función "Volver Arriba" ---
+            function handleScroll() {
+                if (window.scrollY > 300) {
+                    backToTopBtn.classList.remove('hidden');
+                    backToTopBtn.classList.add('flex');
+                } else {
+                    backToTopBtn.classList.add('hidden');
+                    backToTopBtn.classList.remove('flex');
+                }
+            }
 
             // --- Manejadores de Eventos ---
-            elements.addCategoryBtn.addEventListener('click', () => {
+            
+            addCategoryBtn.addEventListener('click', () => {
                 editState = null; 
-                elements.categoryModalTitle.textContent = 'Crear Nueva Categoría';
-                showModal(elements.categoryModal);
+                categoryModalTitle.textContent = 'Crear Nueva Categoría';
+                showModal(categoryModal);
             });
-            elements.addLinkBtn.addEventListener('click', () => {
+            addLinkBtn.addEventListener('click', () => {
                 if (categoryOrder.length === 0) {
-                    showModal(elements.categoryModal);
-                    elements.categoryError.textContent = 'Debes crear una categoría primero.';
-                    elements.categoryError.classList.remove("hidden");
+                    showModal(categoryModal);
+                    categoryError.textContent = 'Debes crear una categoría primero.';
+                    categoryError.classList.remove('hidden');
                     return;
                 }
                 editState = null; 
-                elements.linkModalTitle.textContent = 'Añadir Nuevo Enlace';
+                linkModalTitle.textContent = 'Añadir Nuevo Enlace';
                 updateCategorySelect();
-                showModal(elements.linkModal);
+                showModal(linkModal);
             });
-            elements.modalCloseBtns.forEach(btn => {
+
+            modalCloseBtns.forEach(btn => {
                 btn.addEventListener('click', (e) => hideModal(e.target.closest('.modal')));
             });
-            elements.categoryForm.addEventListener('submit', (e) => {
+
+            categoryForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const newName = elements.categoryNameInput.value.trim();
+                const newName = categoryNameInput.value.trim();
                 if (!newName) return;
                 if (editState && editState.type === 'category') {
                     const oldName = editState.oldName;
-                    if (newName === oldName) { hideModal(elements.categoryModal); return; }
+                    if (newName === oldName) {
+                        hideModal(categoryModal);
+                        return;
+                    }
                     if (bookmarksData.hasOwnProperty(newName)) {
-                        elements.categoryError.textContent = 'Esa categoría ya existe.';
-                        elements.categoryError.classList.remove("hidden");
+                        categoryError.textContent = 'Esa categoría ya existe.';
+                        categoryError.classList.remove('hidden');
                         return;
                     }
                     bookmarksData[newName] = bookmarksData[oldName];
                     delete bookmarksData[oldName];
                     const index = categoryOrder.indexOf(oldName);
-                    if (index > -1) { categoryOrder[index] = newName; }
+                    if (index > -1) {
+                        categoryOrder[index] = newName;
+                    }
                 } else {
                     if (bookmarksData.hasOwnProperty(newName)) {
-                        elements.categoryError.textContent = 'Esa categoría ya existe.';
-                        elements.categoryError.classList.remove("hidden");
+                        categoryError.textContent = 'Esa categoría ya existe.';
+                        categoryError.classList.remove('hidden');
                         return;
                     }
                     bookmarksData[newName] = []; 
@@ -553,22 +782,28 @@
                 }
                 saveData();
                 renderPage();
-                hideModal(elements.categoryModal);
+                hideModal(categoryModal);
             });
-            elements.linkForm.addEventListener('submit', (e) => {
+
+            linkForm.addEventListener('submit', (e) => {
                 e.preventDefault();
-                const title = elements.linkTitleInput.value.trim();
-                const url = elements.linkUrlInput.value.trim();
-                const category = elements.linkCategorySelect.value;
-                const description = elements.linkDescriptionInput.value.trim();
-                const tags = elements.linkTagsInput.value.trim().split(',').map(tag => tag.trim()).filter(tag => tag !== ''); 
+                const title = linkTitleInput.value.trim();
+                const url = linkUrlInput.value.trim();
+                const category = linkCategorySelect.value;
+                const description = linkDescriptionInput.value.trim();
+                const tags = linkTagsInput.value.trim()
+                                .split(',')
+                                .map(tag => tag.trim())
+                                .filter(tag => tag !== ''); 
+                
                 if (!title || !url || !category) {
-                    elements.linkError.textContent = 'Por favor completa todos los campos.';
-                    elements.linkError.classList.remove("hidden");
+                    linkError.textContent = 'Por favor completa todos los campos.';
+                    linkError.classList.remove('hidden');
                     return;
                 }
                 const finalUrl = (url.startsWith('http://') || url.startsWith('https://')) ? url : `https://${url}`;
                 const newLink = { title, url: finalUrl, description, tags };
+
                 if (editState && editState.type === 'link') {
                     const oldCategory = editState.category;
                     const oldIndex = editState.index;
@@ -583,32 +818,41 @@
                 }
                 saveData();
                 renderPage();
-                hideModal(elements.linkModal);
+                hideModal(linkModal);
             });
-            elements.undoBtn.addEventListener('click', handleUndoClick);
-            elements.searchInput.addEventListener('input', handleSearch);
-            elements.exportBtn.addEventListener('click', exportData);
-            elements.importBtn.addEventListener('click', () => elements.importFileInput.click());
-            elements.importFileInput.addEventListener('change', importData);
-            elements.themeToggleBtn.addEventListener('click', toggleTheme);
+            
+            undoBtn.addEventListener('click', handleUndoClick);
+            searchInput.addEventListener('input', handleSearch);
+            exportBtn.addEventListener('click', exportData);
+            importBtn.addEventListener('click', () => importFileInput.click());
+            importFileInput.addEventListener('change', importData);
+            themeToggleBtn.addEventListener('click', toggleTheme);
             window.addEventListener('scroll', handleScroll);
-            elements.backToTopBtn.addEventListener('click', () => {
+            backToTopBtn.addEventListener('click', () => {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             });
-            elements.categoriesContainer.addEventListener('click', (e) => {
-                const linkAnchor = e.target.closest('a');
-                const dragHandle = e.target.closest('.link-drag-handle, .category-drag-handle');
-                const button = e.target.closest('button');
 
-                if (linkAnchor && !button && !dragHandle) {
-                    return; // Permite que el enlace funcione
+            // --- ¡¡¡EVENTOS MODIFICADOS!!! ---
+            // --- Eventos del Menú (Móvil y Escritorio) ---
+            hamburgerBtn.addEventListener('click', showMobileMenu); // Botón móvil
+            desktopHamburgerBtn.addEventListener('click', showMobileMenu); // ¡NUEVO! Botón escritorio
+            mobileMenuCloseBtn.addEventListener('click', hideMobileMenu);
+            mobileMenuOverlay.addEventListener('click', hideMobileMenu);
+            // Cierra el menú si se hace clic en un enlace
+            mobileMenuContent.addEventListener('click', (e) => {
+                if (e.target.closest('a')) {
+                    hideMobileMenu();
                 }
-                
-                if (button || dragHandle) {
+            });
+            // --- Fin de Eventos Modificados ---
+
+
+            categoriesContainer.addEventListener('click', (e) => {
+                if (e.target.closest('a') && !e.target.closest('button')) return;
+                if (e.target.closest('button')) {
                     e.preventDefault();
                     e.stopPropagation();
                 }
-
                 const editLinkBtn = e.target.closest('.edit-link-btn');
                 if (editLinkBtn) {
                     showEditLinkModal(editLinkBtn.dataset.category, parseInt(editLinkBtn.dataset.index, 10));
@@ -642,12 +886,10 @@
             });
 
             // --- INICIALIZACIÓN ---
-            // Aplica el tema guardado ANTES de cargar la página para evitar "flash"
-            const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'light'; // Default a 'light'
+            loadData(); // Carga y migra los datos existentes
+            const savedTheme = localStorage.getItem(STORAGE_KEY_THEME) || 'dark';
             applyTheme(savedTheme);
-            
-            loadData(); // Carga (desde predeterminados o localStorage) y migra los datos
-            renderPage();
+            renderPage(); // Dibuja la página Y el menú móvil
         });
     </script>
 </body>
