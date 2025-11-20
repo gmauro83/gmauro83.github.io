@@ -1,329 +1,361 @@
-document.addEventListener('DOMContentLoaded', () => {
+/* --- 1. VARIABLES Y TEMAS --- */
+:root {
+    --bg-main: #0b0f19;
+    --text-main: #f0f4f8;
+    --text-muted: #94a3b8;
     
-    // --- ¡¡¡TUS DATOS PREDETERMINADOS!!! ---
-            const DEFAULT_BOOKMARKS = {
-                "BÚSQUEDA Y NOTICIAS": [
-                    { "title": "Google", "url": "https://www.google.com", "description": "Buscador", "tags": [] },
-                    { "title": "La Nueva", "url": "https://www.lanueva.com/", "description": "Noticias Locales", "tags": [] },
-                    { "title": "La Brújula 24", "url": "https://www.labrujula24.com", "description": "Noticias Locales", "tags": [] },
-                    { "title": "Infobae", "url": "https://www.infobae.com", "description": "Noticias Nacionales", "tags": [] },
-                    { "title": "Google News", "url": "https://www.news.google.com", "description": "Noticias Nacionales", "tags": [] },
-                    // Agrega más de esta categoría aquí...
-                ],
-                "ENTRETENIMIENTO Y REDES SOCIALES": [
-                    { "title": "Youtube", "url": "https://www.youtube.com", "description": "Videos", "tags": [] },
-                    { "title": "Twitch", "url": "https://www.twitch.tv", "description": "Entretenimiento", "tags": [] },
-                    { "title": "Instagram", "url": "https://www.instagram.com", "description": "Red Social", "tags": [] },
-                    { "title": "TikTok", "url": "https://www.tiktok.com", "description": "Entretenimiento", "tags": [] },
-                    { "title": "Reddit", "url": "https://www.reddit.com", "description": "Red Social", "tags": [] },
-                    { "title": "X", "url": "https://www.x.com", "description": "Red social", "tags": [] },
-                    { "title": "Facebook", "url": "https://www.facebook.com", "description": "Red social", "tags": [] },
-                    // Agrega más de esta categoría aquí...
-                ],
-                "TECNOLOGÍA Y TRABAJO": [
-                    { "title": "ChatGPT", "url": "https://www.chat.openai.com", "description": "IA de OpenAI", "tags": [] },
-                    { "title": "Gemini", "url": "https://www.gemini.google.com", "description": "IA de Google", "tags": [] },
-                    { "title": "Perplexity", "url": "https://www.perplexity.ai", "description": "IA de Perplexity", "tags": [] },
-                    { "title": "Github", "url": "https://www.github.com", "description": "Programación", "tags": [] },
-                    { "title": "Gmail", "url": "https://www.mail.google.com", "description": "Correo", "tags": [] },
-                    { "title": "Calendario de Google", "url": "https://www.calendar.google.com", "description": "Calendario", "tags": [] },
-                    { "title": "Google Drive", "url": "https://www.drive.google.com", "description": "Almacenamiento", "tags": [] },
-                    { "title": "Linkdein", "url": "https://www.linkedin.com", "description": "Trabajo", "tags": [] },
-                    { "title": "Lenguajes Programación", "url": "https://www.lenguajehtml.com", "description": "Programación", "tags": [] },
-                    // Agrega más de esta categoría aquí...
-                ],
-                "DESCARGAS": [
-                    { "title": "MacTorrents", "url": "https://www.torrentmac.net", "description": "Torrent para Mac", "tags": [] },
-                    { "title": "nMac.to", "url": "https://www.nmac.to", "description": "Torrent para Mac", "tags": [] }
-                    // Agrega más de esta categoría aquí...
-                ]
-                // Puedes crear nuevas categorías copiando el bloque entero:
-                // "Mi Nueva Categoría": [ ... ],
-            };
-
-            const DEFAULT_ORDER = [
-                "Búsqueda y Noticias", 
-                "Tecnología y Trabajo"
-            ];
-            // -----------------------------------------------
-
-    // DOM
-    const categoriesContainer = document.getElementById('categories-container');
-    const modal = document.getElementById('modal');
-    const linkForm = document.getElementById('link-form');
-    const themeBtn = document.getElementById('theme-toggle');
-    const html = document.documentElement;
-    const glassHeader = document.querySelector('.glass-header');
+    /* GRADIENTES IA */
+    --gemini-gradient: linear-gradient(135deg, #4b90ff, #ff5546);
+    --pplx-gradient: linear-gradient(135deg, #22bfa5, #158f7c);
     
-    // Chats
-    const geminiModal = document.getElementById('gemini-modal');
-    const geminiContent = document.getElementById('gemini-content');
-    const closeGeminiBtn = document.getElementById('close-gemini');
-    const geminiChatForm = document.getElementById('gemini-chat-form');
-    const geminiChatInput = document.getElementById('gemini-chat-input');
-    const btnKeyGemini = document.getElementById('btn-key-gemini');
-    const pplxModal = document.getElementById('pplx-modal');
-    const pplxContent = document.getElementById('pplx-content');
-    const closePplxBtn = document.getElementById('close-pplx');
-    const pplxChatForm = document.getElementById('pplx-chat-form');
-    const pplxChatInput = document.getElementById('pplx-chat-input');
-    const btnKeyPplx = document.getElementById('btn-key-pplx');
-
-    // Inputs del Modal de Link
-    const inputCatSelect = document.getElementById('input-category-select');
-    const inputCatText = document.getElementById('input-category-text');
-    const btnToggleCat = document.getElementById('btn-toggle-cat');
-
-    // 1. SEARCH BAR LOGIC
-    const promptForm = document.getElementById('prompt-form');
-    const promptInput = document.getElementById('prompt-input');
-    const searchModeSelect = document.getElementById('search-mode');
-    const btnAction = document.querySelector('.btn-action');
-    const logoIcon = document.querySelector('.sparkle-icon');
-
-    let chatHistory = [];
-    let pplxHistory = [];
-
-    // Convierte el objeto DEFAULT_BOOKMARKS a un array plano con los campos necesarios
-    function convertDefaultBookmarks(obj) {
-        const arr = [];
-        let counter = 1;
-        Object.entries(obj).forEach(([category, items]) => {
-            items.forEach(item => {
-                arr.push({
-                    id: Date.now() + counter++,
-                    title: item.title || item.titulo || 'Sin título',
-                    url: item.url || item.href || '#',
-                    description: item.description || '',
-                    tags: item.tags || [],
-                    category
-                });
-            });
-        });
-        return arr;
-    }
-
-    // Cargar links desde localStorage o desde DEFAULT_BOOKMARKS convertido
-    let links = JSON.parse(localStorage.getItem('myLinks')) || convertDefaultBookmarks(DEFAULT_BOOKMARKS);
-
-    searchModeSelect.addEventListener('change', () => {
-        const mode = searchModeSelect.value;
-        glassHeader.classList.remove('mode-pplx');
-        if (mode === 'gemini') {
-            promptInput.placeholder = "Pregúntale algo a Gemini...";
-            btnAction.style.background = 'var(--gemini-gradient)';
-            logoIcon.name = "rocket"; logoIcon.style.color = "#4b90ff";
-        } else if (mode === 'perplexity') {
-            promptInput.placeholder = "Investigar con Perplexity...";
-            btnAction.style.background = '#22bfa5';
-            glassHeader.classList.add('mode-pplx');
-            logoIcon.name = "bulb"; logoIcon.style.color = "#22bfa5";
-        }
-    });
-
-    promptForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const text = promptInput.value.trim();
-        const mode = searchModeSelect.value;
-        if (!text) return;
-        if (mode === 'perplexity') { startPplxChat(text); }
-        else { startGeminiChat(text); }
-        promptInput.value = "";
-    });
-
-    // 2. CATEGORY LOGIC (SELECT vs TEXT)
-    let isNewCategory = false;
+    /* VIDRIO Y PANELES */
+    --glass-bg: rgba(19, 25, 40, 0.8);
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --glass-shadow: rgba(0, 0, 0, 0.5);
     
-    btnToggleCat.addEventListener('click', () => {
-        isNewCategory = !isNewCategory;
-        if(isNewCategory) {
-            inputCatSelect.classList.add('hidden');
-            inputCatText.classList.remove('hidden');
-            btnToggleCat.innerHTML = '<ion-icon name="list-outline"></ion-icon>';
-            inputCatText.focus();
-        } else {
-            inputCatSelect.classList.remove('hidden');
-            inputCatText.classList.add('hidden');
-            btnToggleCat.innerHTML = '<ion-icon name="add-outline"></ion-icon>';
-        }
-    });
+    --input-bg: rgba(0, 0, 0, 0.4);
+    --card-bg: rgba(30, 41, 59, 0.4);
+    --card-hover: rgba(40, 50, 80, 0.8);
+    --accent: #818cf8;
+}
 
-    function populateCategories() {
-        const categories = new Set();
-        links.forEach(l => categories.add(l.category));
-        inputCatSelect.innerHTML = '';
-        categories.forEach(cat => {
-            const opt = document.createElement('option');
-            opt.value = cat; opt.textContent = cat;
-            inputCatSelect.appendChild(opt);
-        });
-    }
+[data-theme="light"] {
+    --bg-main: #f8fafc;
+    --text-main: #1e293b;
+    --text-muted: #64748b;
+    --gemini-gradient: linear-gradient(135deg, #2563eb, #db2777);
+    --pplx-gradient: linear-gradient(135deg, #0d9488, #0f766e);
+    --glass-bg: rgba(255, 255, 255, 0.9);
+    --glass-border: rgba(0, 0, 0, 0.1);
+    --glass-shadow: rgba(0,0,0,0.1);
+    --input-bg: rgba(255, 255, 255, 0.9);
+    --card-bg: rgba(255, 255, 255, 0.6);
+    --card-hover: #ffffff;
+    --accent: #4f46e5;
+}
 
-    // 3. RENDER
-    function render() {
-        categoriesContainer.innerHTML = '';
-        const categories = {};
-        links.forEach(link => {
-            if (!categories[link.category]) categories[link.category] = [];
-            categories[link.category].push(link);
-        });
+/* --- 2. BASE --- */
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
 
-        for (const [catName, catLinks] of Object.entries(categories)) {
-            const section = document.createElement('section');
-            section.className = 'category-section';
-            section.innerHTML = `
-                <div class="category-header">
-                    <div class="category-title"><ion-icon name="folder-open-outline"></ion-icon> ${catName}</div>
-                    <div class="category-actions">
-                        <button class="btn-cat-action btn-rename-cat" title="Renombrar"><ion-icon name="pencil-outline"></ion-icon></button>
-                        <button class="btn-cat-action btn-delete-cat btn-cat-delete" title="Eliminar"><ion-icon name="trash-outline"></ion-icon></button>
-                    </div>
-                </div>
-                <div class="links-grid-container"></div>
-            `;
-            categoriesContainer.appendChild(section);
-            
-            section.querySelector('.btn-rename-cat').addEventListener('click', () => renameCategory(catName));
-            section.querySelector('.btn-delete-cat').addEventListener('click', () => deleteCategory(catName));
+body {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    min-height: 100vh;
+    padding: 2rem;
+    transition: background 0.3s, color 0.3s;
+    overflow-x: hidden; /* Evita scroll lateral por animaciones */
+}
 
-            const gridContainer = section.querySelector('.links-grid-container');
-            catLinks.forEach(link => {
-                const wrapper = document.createElement('div'); wrapper.className = 'card-wrapper';
-                wrapper.setAttribute('data-id', link.id);
-                const favicon = `https://www.google.com/s2/favicons?domain=${link.url}&sz=64`;
-                wrapper.innerHTML = `<div class="card" onclick="window.open('${link.url}', '_blank')"><img src="${favicon}" onerror="this.src='https://unpkg.com/ionicons@7.1.0/dist/svg/globe-outline.svg'"><div class="card-info"><span class="card-title">${link.title}</span><span class="card-url">${getDomain(link.url)}</span></div><div class="card-actions"><button class="action-btn btn-edit"><ion-icon name="pencil-outline"></ion-icon></button><button class="action-btn btn-delete"><ion-icon name="trash-outline"></ion-icon></button></div></div>`;
-                wrapper.querySelector('.btn-edit').addEventListener('click', (e) => { e.stopPropagation(); openModal(link); });
-                wrapper.querySelector('.btn-delete').addEventListener('click', (e) => { e.stopPropagation(); deleteLink(link.id); });
-                gridContainer.appendChild(wrapper);
-            });
+.bg-animate {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+    background: radial-gradient(circle at 50% 0%, rgba(75, 144, 255, 0.15) 0%, transparent 50%);
+}
 
-            new Sortable(gridContainer, { group: 'shared', animation: 150, ghostClass: 'sortable-ghost', delay: 300, delayOnTouchOnly: true, onEnd: (evt) => { const itemEl = evt.item; const newCategory = evt.to.closest('.category-section').querySelector('.category-title').innerText.trim(); const linkId = parseInt(itemEl.getAttribute('data-id')); const linkIndex = links.findIndex(l => l.id === linkId); if(linkIndex > -1) { links[linkIndex].category = newCategory; save(); } } });
-        }
-    }
+.container { max-width: 1200px; margin: 0 auto; }
 
-    function renameCategory(oldName) {
-        const newName = prompt("Nuevo nombre:", oldName);
-        if (newName && newName.trim() && newName !== oldName) {
-            links.forEach(l => { if (l.category === oldName) l.category = newName.trim(); });
-            save(); render();
-        }
-    }
-    function deleteCategory(name) {
-        if(confirm(`¿Borrar "${name}" y sus enlaces?`)) {
-            links = links.filter(l => l.category !== name);
-            save(); render();
-        }
-    }
+/* --- 3. HEADER GLASS --- */
+.glass-header {
+    display: flex; flex-direction: column; align-items: center; gap: 1.5rem;
+    background: var(--glass-bg); backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    padding: 2.5rem 2rem; border-radius: 24px; margin-bottom: 3rem;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+    position: relative; overflow: hidden;
+}
 
-    // CHATS
-    function startGeminiChat(msg) { chatHistory = []; geminiContent.innerHTML = ''; geminiModal.classList.remove('hidden'); setTimeout(() => { geminiModal.classList.add('visible'); geminiChatInput.focus(); }, 10); continueGeminiChat(msg); }
-    geminiChatForm.addEventListener('submit', (e) => { e.preventDefault(); const t = geminiChatInput.value.trim(); if(t) { continueGeminiChat(t); geminiChatInput.value = ""; } });
-    async function continueGeminiChat(msg) {
-        addMessageToUI(geminiContent, msg, 'user');
-        chatHistory.push({ role: "user", parts: [{ text: msg }] });
-        const loading = showLoading(geminiContent);
-        try {
-            let k = localStorage.getItem('gemini_api_key');
-            if(!k) { k=prompt("Gemini API Key:"); if(k) localStorage.setItem('gemini_api_key', k.trim()); else { loading.remove(); return; } }
-            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${k}`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ contents: chatHistory }) });
-            const d = await res.json(); loading.remove();
-            if(d.error) throw new Error(d.error.message);
-            const txt = d.candidates[0].content.parts[0].text;
-            addMessageToUI(geminiContent, txt, 'model');
-            chatHistory.push({ role: "model", parts: [{ text: txt }] });
-        } catch(e) { loading.remove(); addErrorToUI(geminiContent, e.message, 'gemini'); }
-    }
+.glass-header::before {
+    content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+    background: var(--gemini-gradient); transition: background 0.5s;
+}
+.glass-header.mode-pplx::before { background: var(--pplx-gradient); }
 
-    function startPplxChat(msg) { pplxHistory = [{ role: "system", content: "Be precise." }]; pplxContent.innerHTML = ''; pplxModal.classList.remove('hidden'); setTimeout(() => { pplxModal.classList.add('visible'); pplxChatInput.focus(); }, 10); continuePplxChat(msg); }
-    pplxChatForm.addEventListener('submit', (e) => { e.preventDefault(); const t = pplxChatInput.value.trim(); if(t) { continuePplxChat(t); pplxChatInput.value = ""; } });
-    async function continuePplxChat(msg) {
-        addMessageToUI(pplxContent, msg, 'user');
-        pplxHistory.push({ role: "user", content: msg });
-        const loading = showLoading(pplxContent);
-        try {
-            let k = localStorage.getItem('pplx_api_key');
-            if(!k) { k=prompt("Perplexity API Key:"); if(k) localStorage.setItem('pplx_api_key', k.trim()); else { loading.remove(); return; } }
-            const res = await fetch('https://api.perplexity.ai/chat/completions', { method: 'POST', headers: {'Authorization': `Bearer ${k}`, 'Content-Type': 'application/json'}, body: JSON.stringify({ model: "sonar-pro", messages: pplxHistory }) });
-            const d = await res.json(); loading.remove();
-            if(d.error) throw new Error(d.error.message);
-            const txt = d.choices[0].message.content;
-            addMessageToUI(pplxContent, txt, 'model');
-            pplxHistory.push({ role: "assistant", content: txt });
-        } catch(e) { loading.remove(); addErrorToUI(pplxContent, e.message, 'pplx'); }
-    }
+/* TÍTULO */
+.logo-area { text-align: center; }
+h1 {
+    font-weight: 800; font-size: 2.5rem; margin-bottom: 0.5rem;
+    background: var(--gemini-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    display: inline-flex; align-items: center; gap: 10px; transition: 0.5s;
+}
+.glass-header.mode-pplx h1 { background: var(--pplx-gradient); -webkit-background-clip: text; }
 
-    // UTILS
-    function addMessageToUI(c, t, r) { const b = document.createElement('div'); b.className = `chat-bubble chat-${r}`; if(r==='model') b.innerHTML = marked.parse(t); else b.textContent = t; c.appendChild(b); c.scrollTop = c.scrollHeight; }
-    function showLoading(c) { const d = document.createElement('div'); d.className = 'loading-spinner'; d.innerHTML = '<ion-icon name="sync"></ion-icon> ...'; c.appendChild(d); c.scrollTop = c.scrollHeight; return d; }
-    function addErrorToUI(c, m, t) { c.innerHTML += `<div style="color:#ef4444;text-align:center">Error: ${m}</div>`; }
-    function getDomain(u) { try { return new URL(u).hostname.replace('www.',''); } catch { return 'link'; } }
-    function save() { localStorage.setItem('myLinks', JSON.stringify(links)); }
-    function deleteLink(id) { if(confirm('¿Borrar?')) { links = links.filter(l => l.id !== id); save(); render(); } }
+.sparkle-icon { color: #4b90ff; font-size: 2rem; animation: pulse 2s infinite; transition: 0.3s; }
+.glass-header.mode-pplx .sparkle-icon { color: #22bfa5; }
 
-    // MODAL LOGIC
-    function openModal(link = null) {
-        populateCategories();
-        isNewCategory = false;
-        inputCatSelect.classList.remove('hidden');
-        inputCatText.classList.add('hidden');
-        btnToggleCat.innerHTML = '<ion-icon name="add-outline"></ion-icon>';
-        
-        modal.classList.remove('hidden'); setTimeout(() => modal.classList.add('visible'), 10);
-        if (link) {
-            document.getElementById('edit-id').value = link.id;
-            document.getElementById('input-title').value = link.title;
-            document.getElementById('input-url').value = link.url;
-            inputCatSelect.value = link.category;
-        } else {
-            document.getElementById('edit-id').value = '';
-            linkForm.reset();
-        }
-    }
-    function closeModal() { modal.classList.remove('visible'); setTimeout(() => modal.classList.add('hidden'), 300); }
+@keyframes pulse { 0% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.1); opacity: 1; } 100% { transform: scale(1); opacity: 0.8; } }
+.subtitle { color: var(--text-muted); font-size: 1rem; font-weight: 400; }
+
+/* BOTONES SUPERIORES (Config) */
+.top-right-actions { position: absolute; top: 1.5rem; right: 1.5rem; display: flex; gap: 10px; }
+.btn-icon-sm {
+    background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border);
+    color: var(--text-muted); padding: 0.5rem; border-radius: 8px;
+    cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; font-size: 1.2rem;
+}
+.btn-icon-sm:hover { background: rgba(255,255,255,0.1); color: white; }
+
+/* --- 4. BARRA DE COMANDOS (DUAL) --- */
+.search-bar {
+    width: 100%; max-width: 650px; position: relative;
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--input-bg); border: 1px solid var(--glass-border);
+    border-radius: 18px; transition: all 0.3s; padding: 0.5rem;
+}
+.search-bar:focus-within {
+    border-color: #4b90ff; box-shadow: 0 0 0 4px rgba(75, 144, 255, 0.15); background: rgba(0,0,0,0.6);
+}
+.glass-header.mode-pplx .search-bar:focus-within { 
+    border-color: #22bfa5; box-shadow: 0 0 0 4px rgba(34, 191, 165, 0.15); 
+}
+
+/* Selector desplegable (dentro de la barra) */
+.search-selector {
+    position: relative; display: flex; align-items: center;
+    border-right: 1px solid var(--glass-border); margin-right: 5px;
+}
+.search-selector select {
+    appearance: none; background: transparent; border: none;
+    color: var(--text-main); font-weight: 600; font-size: 0.9rem;
+    padding: 0.8rem 1.8rem 0.8rem 1rem; cursor: pointer; outline: none;
+}
+.search-selector select option { background: var(--bg-main); color: var(--text-main); }
+.search-selector .select-icon {
+    position: absolute; right: 8px; font-size: 0.8rem;
+    color: var(--text-muted); pointer-events: none;
+}
+
+.search-bar input {
+    flex-grow: 1; padding: 0.8rem 1.2rem; background: transparent;
+    border: none; color: var(--text-main); outline: none; font-size: 1.1rem;
+}
+
+/* Botones de Acción (Gemini / Perplexity) */
+.action-buttons { display: flex; gap: 8px; padding-right: 5px; }
+.btn-action {
+    width: 44px; height: 44px; border-radius: 12px; border: none; color: white;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    font-size: 1.3rem; transition: transform 0.2s, filter 0.2s;
+}
+.btn-action:hover { transform: scale(1.08); filter: brightness(1.1); }
+.btn-gemini { background: var(--gemini-gradient); box-shadow: 0 4px 15px rgba(75, 144, 255, 0.3); }
+.btn-pplx { background: var(--pplx-gradient); box-shadow: 0 4px 15px rgba(34, 191, 165, 0.3); }
+
+/* Botones de selección dentro del prompt — hacerlos consistentes con .btn-action */
+.btn-select {
+    width: 44px; height: 44px; border-radius: 12px; border: none; color: white;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    font-size: 1.1rem; transition: transform 0.15s, filter 0.15s; margin: 0;
+}
+.btn-select.btn-gemini { background: var(--gemini-gradient); box-shadow: 0 4px 15px rgba(75,144,255,0.2); }
+.btn-select.btn-pplx { background: var(--pplx-gradient); box-shadow: 0 4px 15px rgba(34,191,165,0.2); }
+.btn-select:hover { transform: scale(1.06); filter: brightness(1.03); }
+.btn-select.active { outline: 3px solid rgba(255,255,255,0.06); }
+
+/* Alinear los botones dentro de la barra y ocultar el borde derecho del selector */
+.search-selector { border-right: none; padding-right: 6px; }
+.action-buttons { padding-right: 6px; }
+
+/* --- 5. GRILLA DE CATEGORÍAS --- */
+.category-section { margin-bottom: 3rem; }
+
+.category-header {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 1.5rem; border-bottom: 1px solid var(--glass-border);
+    padding-bottom: 0.5rem;
+}
+.category-title {
+    font-size: 0.9rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 1.5px; color: #4b90ff; display: flex; align-items: center; gap: 0.5rem;
+}
+
+/* ACCIONES DE CATEGORÍA (Renombrar/Borrar) */
+.category-actions { display: flex; gap: 8px; opacity: 0.3; transition: opacity 0.2s; }
+.category-header:hover .category-actions { opacity: 1; }
+.btn-cat-action {
+    background: transparent; border: 1px solid var(--glass-border);
+    color: var(--text-muted); width: 32px; height: 32px;
+    border-radius: 8px; cursor: pointer; font-size: 1rem;
+    display: flex; justify-content: center; align-items: center; transition: all 0.2s;
+}
+.btn-cat-action:hover { background: var(--input-bg); color: var(--text-main); border-color: var(--accent); }
+.btn-cat-delete:hover { color: #ef4444; border-color: #ef4444; }
+
+/* Grilla */
+.links-grid-container {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; width: 100%;
+}
+
+/* Tarjetas */
+.card-wrapper { width: 100%; height: 100%; }
+.card {
+    background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid var(--glass-border);
+    padding: 1.2rem; border-radius: 16px; text-decoration: none;
+    display: flex; align-items: center; gap: 1rem;
+    height: 100%; transition: all 0.3s; position: relative; cursor: pointer;
+}
+.card:hover {
+    background: var(--card-hover); transform: translateY(-5px);
+    border-color: var(--accent); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5); z-index: 10;
+}
+
+.card img { width: 44px; height: 44px; border-radius: 10px; padding: 4px; background: rgba(255,255,255,0.05); }
+.card-info { flex: 1; overflow: hidden; min-width: 0; }
+.card-title { font-weight: 600; font-size: 0.95rem; color: var(--text-main); display: block; }
+.card-url { font-size: 0.75rem; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+.card-actions { position: absolute; top: 8px; right: 8px; display: flex; gap: 4px; opacity: 0; transform: translateX(5px); transition: all 0.2s; }
+.card:hover .card-actions { opacity: 1; transform: translateX(0); }
+
+.action-btn {
+    background: rgba(0,0,0,0.3); border: none; color: var(--text-muted);
+    width: 28px; height: 28px; border-radius: 6px; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+}
+.action-btn:hover { background: var(--accent); color: white; }
+.btn-delete:hover { background: #ef4444; }
+
+/* --- 6. MODALES (Links) --- */
+.modal {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
+    opacity: 0; pointer-events: none; transition: opacity 0.3s;
+}
+.modal.visible { opacity: 1; pointer-events: auto; }
+
+.glass-panel {
+    background: #131928; background: var(--glass-bg);
+    border: 1px solid var(--glass-border); padding: 2.5rem;
+    border-radius: 24px; width: 90%; max-width: 450px;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+    transform: scale(0.95); transition: transform 0.3s;
+}
+.modal.visible .glass-panel { transform: scale(1); }
+.modal h2 { color: var(--text-main); margin-bottom: 1.5rem; font-size: 1.5rem; }
+
+.input-group { margin-bottom: 1.2rem; }
+.input-group label { display: block; font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.5rem; font-weight: 600; }
+.input-group input, .input-group select {
+    width: 100%; padding: 0.9rem; background: rgba(0,0,0,0.3);
+    border: 1px solid var(--glass-border); border-radius: 12px;
+    color: var(--text-main); outline: none; font-size: 1rem;
+}
+.input-group input:focus { border-color: #4b90ff; }
+
+/* Selector de Categoría Híbrido */
+.category-wrapper { display: flex; gap: 10px; }
+.cat-input { flex-grow: 1; }
+.cat-input.hidden { display: none; }
+.btn-cat-toggle {
+    background: var(--input-bg); border: 1px solid var(--glass-border);
+    color: var(--text-main); width: 46px; border-radius: 12px;
+    cursor: pointer; display: flex; justify-content: center; align-items: center;
+    font-size: 1.2rem; transition: 0.2s;
+}
+.btn-cat-toggle:hover { border-color: var(--accent); background: rgba(255,255,255,0.05); }
+
+.modal-actions { display: flex; justify-content: flex-end; gap: 1rem; margin-top: 2rem; }
+.btn-primary { background: var(--gemini-gradient); color: white; border: none; padding: 0.7rem 1.8rem; border-radius: 10px; cursor: pointer; font-weight: 600; }
+.btn-text { background: transparent; color: var(--text-muted); border: none; cursor: pointer; font-weight: 600; }
+
+/* --- 7. PANELES LATERALES DE CHAT (SIDEBARS) --- */
+#gemini-modal, #pplx-modal {
+    background: transparent; backdrop-filter: none; pointer-events: none;
+    justify-content: flex-end; padding-right: 0;
+}
+#gemini-modal .glass-panel, #pplx-modal .glass-panel {
+    pointer-events: auto; width: 500px; max-width: 100%;
+    height: 100vh; max-height: 100vh; margin-top: 0;
+    border-radius: 0; border-top-left-radius: 20px; border-bottom-left-radius: 20px;
+    transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    box-shadow: -10px 0 40px rgba(0,0,0,0.6);
+    display: flex; flex-direction: column; padding: 0;
+    border-right: none; border-top: none; border-bottom: none;
+}
+#gemini-modal.visible .glass-panel, #pplx-modal.visible .glass-panel {
+    transform: translateX(0); scale: 1;
+}
+
+.gemini-header, .pplx-header {
+    padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border);
+    display: flex; justify-content: space-between; align-items: center;
+    background: rgba(0,0,0,0.2); flex-shrink: 0;
+}
+.gemini-icon { color: #4b90ff; animation: pulse 3s infinite; }
+.pplx-icon { color: #22bfa5; }
+.btn-close { background: transparent; border: none; color: var(--text-muted); font-size: 1.8rem; cursor: pointer; transition: 0.2s; }
+.btn-close:hover { color: #ef4444; transform: rotate(90deg); }
+
+/* ÁREA DE RESPUESTAS */
+.gemini-response {
+    flex: 1; padding: 2rem; overflow-y: auto;
+    display: flex; flex-direction: column; gap: 1.5rem;
+    scroll-behavior: smooth; color: var(--text-main);
+}
+
+/* BURBUJAS DE CHAT */
+.chat-bubble {
+    max-width: 85%; padding: 1rem 1.5rem; border-radius: 18px;
+    line-height: 1.6; font-size: 1rem; position: relative; word-wrap: break-word;
+}
+
+/* Usuario */
+.chat-user {
+    align-self: flex-end; background: var(--accent); color: white;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.3);
+}
+
+/* Modelo */
+.chat-model {
+    align-self: flex-start; background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--glass-border); color: var(--text-main);
+    border-bottom-left-radius: 4px;
+}
+
+/* FOOTER DE CHAT */
+.gemini-footer, .pplx-footer {
+    padding: 1.5rem; border-top: 1px solid var(--glass-border);
+    background: rgba(0,0,0,0.3); display: flex; gap: 12px;
+    flex-shrink: 0; align-items: center;
+}
+
+#gemini-chat-input, #pplx-chat-input {
+    flex: 1; padding: 1rem 1.5rem; border-radius: 14px;
+    background: rgba(255,255,255,0.08); border: 1px solid var(--glass-border);
+    color: var(--text-main); outline: none; font-size: 1rem; transition: 0.3s;
+}
+#gemini-chat-input:focus { border-color: #4b90ff; background: rgba(0,0,0,0.2); }
+#pplx-chat-input:focus { border-color: #22bfa5; background: rgba(0,0,0,0.2); }
+
+.btn-gemini-send, .btn-pplx-send {
+    width: 52px; height: 52px; border-radius: 14px; border: none; color: white;
+    font-size: 1.4rem; cursor: pointer;
+    display: flex; justify-content: center; align-items: center;
+    transition: transform 0.2s; flex-shrink: 0;
+}
+.btn-gemini-send { background: #4b90ff; }
+.btn-pplx-send { background: #22bfa5; }
+.btn-gemini-send:hover, .btn-pplx-send:hover { transform: scale(1.1); }
+
+/* MARKDOWN */
+.chat-model code { background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 4px; color: #ff79c6; font-family: monospace; }
+.chat-model pre { background: #0b0f19; padding: 1rem; border-radius: 10px; overflow-x: auto; margin: 10px 0; border: 1px solid var(--glass-border); }
+.loading-spinner { text-align: center; color: var(--text-muted); margin-top: 20%; font-style: italic; animation: pulse 1.5s infinite; }
+
+/* --- 8. RESPONSIVE --- */
+@media (max-width: 1024px) {
+    .links-grid-container { grid-template-columns: repeat(3, 1fr); }
+}
+@media (max-width: 768px) {
+    .links-grid-container { grid-template-columns: repeat(2, 1fr); }
+    .glass-header { padding: 1.5rem; } h1 { font-size: 2rem; } .search-bar { max-width: 100%; }
     
-    document.getElementById('btn-add').addEventListener('click', () => openModal());
-    document.getElementById('btn-cancel').addEventListener('click', () => closeModal());
-    
-    linkForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const id = document.getElementById('edit-id').value;
-        const title = document.getElementById('input-title').value;
-        let url = document.getElementById('input-url').value;
-        if (!url.startsWith('http')) url = 'https://' + url;
-        
-        // DETERMINAR CATEGORÍA
-        let category;
-        if (isNewCategory) {
-            category = inputCatText.value.trim();
-            if (!category) return alert("Escribe un nombre para la categoría");
-        } else {
-            category = inputCatSelect.value;
-        }
-
-        if (id) {
-            const index = links.findIndex(l => l.id == id);
-            if (index > -1) links[index] = { ...links[index], title, url, category };
-        } else {
-            links.push({ id: Date.now(), title, url, category });
-        }
-        save(); render(); closeModal();
-    });
-
-    // Close Btns
-    [closeGeminiBtn, closePplxBtn].forEach(b => b.addEventListener('click', () => {
-        document.querySelectorAll('.modal').forEach(m => { m.classList.remove('visible'); setTimeout(()=>m.classList.add('hidden'), 300); });
-    }));
-    [btnKeyGemini, btnKeyPplx].forEach(b => b.addEventListener('click', () => {
-        const k = prompt("API Key:"); if(k) localStorage.setItem(b.id === 'btn-key-gemini' ? 'gemini_api_key' : 'pplx_api_key', k.trim());
-    }));
-
-    // Theme
-    const savedTheme = localStorage.getItem('theme') || 'dark';
-    html.setAttribute('data-theme', savedTheme);
-    themeBtn.addEventListener('click', () => {
-        const newTheme = html.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-        html.setAttribute('data-theme', newTheme); localStorage.setItem('theme', newTheme);
-    });
-
-    render();
-});
+    #gemini-modal, #pplx-modal { padding-right: 0; align-items: flex-end; background: rgba(0,0,0,0.5); pointer-events: auto; }
+    #gemini-modal .glass-panel, #pplx-modal .glass-panel { 
+        width: 100%; height: 85vh; border-radius: 24px 24px 0 0; 
+        transform: translateY(100%); border-left: none; 
+    }
+    #gemini-modal.visible .glass-panel, #pplx-modal.visible .glass-panel { transform: translateY(0); }
+}
+@media (max-width: 480px) { .links-grid-container { grid-template-columns: 1fr; } }
