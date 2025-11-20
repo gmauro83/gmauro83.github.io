@@ -1,0 +1,210 @@
+/* Fuente más limpia */
+        body { font-family: 'Inter', sans-serif; }
+        
+        /* Ocultar modales por defecto */
+        .modal { display: none; }
+        .modal.flex { display: flex; }
+        
+        /* Estilos de "fantasma" para Drag & Drop */
+        .sortable-ghost {
+            opacity: 0.4;
+            background: #e0e7ff; /* indigo-100 */
+        }
+        .dark .sortable-ghost {
+            background: #3730a3; /* indigo-900 */
+        }
+
+        /* Toast de Deshacer */
+        #undo-toast {
+            transform: translateY(120%);
+            transition: transform 0.3s ease-in-out;
+            visibility: hidden;
+        }
+        #undo-toast.show {
+            transform: translateY(0);
+            visibility: visible;
+        }
+        
+/* Reemplaza las reglas existentes de 'opacity' por estas */
+
+.link-card .link-actions,
+.category-header .category-actions,
+.category-header .category-drag-handle {
+    opacity: 0;
+    transition: opacity 0.2s ease-in-out;
+}
+
+/* Mostrar al pasar el ratón por encima (en PC) */
+.link-card:hover .link-actions,
+.category-header:hover .category-actions,
+.category-header:hover .category-drag-handle {
+    opacity: 0.5; /* Sutil */
+}
+
+/* Mostrar siempre en pantallas táctiles (móviles) */
+@media (pointer: coarse) {
+    .link-card .link-actions,
+    .category-header .category-actions,
+    .category-header .category-drag-handle {
+        opacity: 0.3;
+    }
+}
+
+.link-card .link-actions:hover,
+.category-header .category-actions:hover,
+.category-header .category-drag-handle:hover {
+    opacity: 1; /* Opacidad total al apuntar al control */
+}
+
+/* Contenedor para el scroll horizontal */
+.horizontal-scroll-container {
+    /* Comportamiento del Scroll */
+    overflow-x: auto;
+    overflow-y: hidden;
+
+    /* Viewport de 3 tarjetas (El fix) */
+    max-width: 50rem; 
+    margin-left: auto;
+    margin-right: auto;
+
+    /* Ocultar barra de scroll (Firefox) */
+    scrollbar-width: none; 
+
+    /* Un poco de padding inferior */
+    padding: 4px 2px 12px 2px;
+}
+
+/* Fila interna que contiene todas las tarjetas */
+.links-row {
+    display: flex; /* Pone los items en fila */
+    width: max-content; /* Asegura que la fila sea tan ancha como su contenido */
+    gap: 16px; /* Espacio de 1rem (gap-4 de Tailwind) entre tarjetas */
+}
+
+/* --- Oculta la Scrollbar (Estilo Twitch) --- */
+
+/* Para Chrome, Safari y Edge */
+.horizontal-scroll-container::-webkit-scrollbar {
+    display: none; /* Oculta la barra */
+}
+
+/* --- Estilos para las Flechas de Navegación --- */
+
+.scroll-arrow {
+    position: absolute; /* Se posiciona sobre el contenedor */
+    top: 50%;
+    transform: translateY(-50%); /* Centrado vertical */
+    z-index: 10;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; /* Círculo perfecto */
+    
+    background-color: rgba(255, 255, 255, 0.9); /* Fondo blanco semi-transparente */
+    color: #111827; /* gris-900 */
+    border: 1px solid #e5e7eb; /* gris-200 */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.dark .scroll-arrow {
+    background-color: rgba(31, 41, 55, 0.9); /* gris-800 semi-transparente */
+    color: #f9fafb; /* gris-50 */
+    border: 1px solid #4b5563; /* gris-600 */
+}
+
+.scroll-arrow:hover {
+    transform: translateY(-50%) scale(1.1); /* Efecto "lift" */
+    background-color: white;
+}
+.dark .scroll-arrow:hover {
+    background-color: #1f2937; /* gris-800 */
+}
+
+/* Deshabilitado (cuando llega al final) */
+.scroll-arrow:disabled {
+    opacity: 0;
+    cursor: default;
+    pointer-events: none;
+}
+
+/* Posición de cada flecha */
+.scroll-left {
+    left: -20px; /* Mitad afuera, mitad adentro */
+}
+.scroll-right {
+    right: -20px; /* Mitad afuera, mitad adentro */
+}
+/* --- Estilo para la Tarjeta Destacada (la del medio) --- */
+
+.link-card {
+    /* Hacemos que la transición sea un poco más suave */
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    /* Hacemos que las tarjetas "normales" sean un poco más sutiles */
+    transform: scale(0.98);
+    opacity: 0.85;
+}
+
+.dark .link-card {
+    opacity: 0.8;
+}
+
+/* Esta es la tarjeta destacada */
+.link-card.is-centered {
+    transform: scale(1.02); /* Un poco más grande */
+    opacity: 1.0; /* Opacidad total */
+    
+    /* Un borde y sombra de acento */
+    border-color: #3b82f6; /* accent-500 */
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.1), 0 4px 6px -4px rgba(59, 130, 246, 0.1);
+}
+
+.dark .link-card.is-centered {
+    box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.15), 0 4px 6px -4px rgba(59, 130, 246, 0.15);
+}
+
+/* Centrar las categorías en la página */
+#categories-container {
+    max-width: 1100px; /* ancho máximo cómodo para 3 tarjetas en fila */
+    margin: 0 auto;    /* centrado horizontal */
+    padding: 24px 16px; /* espacio lateral responsivo */
+    display: block;
+}
+
+/* Forzar centramiento real de cada sección */
+.category-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* centra el contenido interno horizontalmente */
+    width: 100%;
+    box-sizing: border-box;
+    margin-bottom: 28px;
+}
+
+/* Alinear el header y el carrusel dentro del contenedor centalizado */
+.category-header,
+.horizontal-scroll-container {
+    max-width: 1100px; /* coincide con #categories-container */
+    width: 100%;
+    box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Asegurar que la fila de tarjetas no sobresalga y quede centrada dentro del carrusel */
+.horizontal-scroll-container .links-row {
+    justify-content: center;
+}
+
+/* Si hay rebases en pantallas pequeñas, permitir que el carrusel ocupe el 100% */
+@media (max-width: 640px) {
+    .category-header,
+    .horizontal-scroll-container { max-width: 100%; }
+}
