@@ -32,11 +32,10 @@
 
             <form id="prompt-form" class="search-bar">
                 <div class="search-selector">
-                    <select id="search-mode">
-                        <option value="gemini">✨ Gemini</option>
-                        <option value="perplexity">🧠 Perplexity</option>
-                    </select>
-                    <ion-icon name="chevron-down-outline" class="select-icon"></ion-icon>
+                    <div class="action-buttons">
+                        <button type="button" id="btn-select-gemini" class="btn-select btn-gemini" title="Gemini"><ion-icon name="sparkles"></ion-icon></button>
+                        <button type="button" id="btn-select-pplx" class="btn-select btn-pplx" title="Perplexity"><ion-icon name="bulb-outline"></ion-icon></button>
+                    </div>
                 </div>
                 <input type="text" id="prompt-input" placeholder="Pregúntale algo a Gemini..." autocomplete="off">
                 <button type="submit" class="btn-action"><ion-icon name="arrow-forward-outline"></ion-icon></button>
