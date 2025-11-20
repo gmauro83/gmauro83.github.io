@@ -83,7 +83,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let chatHistory = [];
     let pplxHistory = [];
-    let links = JSON.parse(localStorage.getItem('myLinks')) || defaultData;
+
+    // Convierte el objeto DEFAULT_BOOKMARKS a un array plano con los campos necesarios
+    function convertDefaultBookmarks(obj) {
+        const arr = [];
+        let counter = 1;
+        Object.entries(obj).forEach(([category, items]) => {
+            items.forEach(item => {
+                arr.push({
+                    id: Date.now() + counter++,
+                    title: item.title || item.titulo || 'Sin título',
+                    url: item.url || item.href || '#',
+                    description: item.description || '',
+                    tags: item.tags || [],
+                    category
+                });
+            });
+        });
+        return arr;
+    }
+
+    // Cargar links desde localStorage o desde DEFAULT_BOOKMARKS convertido
+    let links = JSON.parse(localStorage.getItem('myLinks')) || convertDefaultBookmarks(DEFAULT_BOOKMARKS);
 
     searchModeSelect.addEventListener('change', () => {
         const mode = searchModeSelect.value;
