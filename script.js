@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
         ],
         "TECNOLOGÍA Y TRABAJO": [
             { "title": "ChatGPT", "url": "https://www.chat.openai.com", "description": "IA de OpenAI", "tags": [] },
-            { "title": "Gemini", "url": "https://www.gemini.google.com", "description": "IA de Google", "tags": [] },
+            { "title": "Gemini", "url": "https://gemini.google.com", "description": "IA de Google", "tags": [] },
             { "title": "Perplexity", "url": "https://www.perplexity.ai", "description": "IA de Perplexity", "tags": [] },
             { "title": "Github", "url": "https://www.github.com", "description": "Programación", "tags": [] },
             { "title": "Gmail", "url": "https://mail.google.com", "description": "Correo", "tags": [] },
