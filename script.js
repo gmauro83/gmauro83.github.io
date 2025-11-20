@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const defaultData = [
         { id: 1, title: "Google", url: "https://google.com", category: "BÚSQUEDA Y NOTICIAS" },
         { id: 2, title: "La Nueva", url: "https://www.lanueva.com/", category: "BÚSQUEDA Y NOTICIAS" },
+        { id: 3, title: "La Brújula 24", url: "https://www.labrujula24.com/", category: "BÚSQUEDA Y NOTICIAS" },
         { id: 10, title: "ChatGPT", url: "https://chat.openai.com", category: "TECNOLOGÍA Y TRABAJO" },
         { id: 11, title: "Gemini", url: "https://gemini.google.com", category: "TECNOLOGÍA Y TRABAJO" }
     ];
