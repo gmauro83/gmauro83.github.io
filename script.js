@@ -25,9 +25,9 @@ document.addEventListener('DOMContentLoaded', () => {
             { "title": "Gemini", "url": "https://www.gemini.google.com", "description": "IA de Google", "tags": [] },
             { "title": "Perplexity", "url": "https://www.perplexity.ai", "description": "IA de Perplexity", "tags": [] },
             { "title": "Github", "url": "https://www.github.com", "description": "Programación", "tags": [] },
-            { "title": "Gmail", "url": "https://www.mail.google.com", "description": "Correo", "tags": [] },
-            { "title": "Calendario de Google", "url": "https://www.calendar.google.com", "description": "Calendario", "tags": [] },
-            { "title": "Google Drive", "url": "https://www.drive.google.com", "description": "Almacenamiento", "tags": [] },
+            { "title": "Gmail", "url": "https://mail.google.com", "description": "Correo", "tags": [] },
+            { "title": "Calendario de Google", "url": "https://calendar.google.com", "description": "Calendario", "tags": [] },
+            { "title": "Google Drive", "url": "https://drive.google.com", "description": "Almacenamiento", "tags": [] },
             { "title": "Linkdein", "url": "https://www.linkedin.com", "description": "Trabajo", "tags": [] },
             { "title": "Lenguajes Programación", "url": "https://www.lenguajehtml.com", "description": "Programación", "tags": [] },
             // Agrega más de esta categoría aquí...
