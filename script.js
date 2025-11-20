@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
             { "title": "Instagram", "url": "https://www.instagram.com", "description": "Red Social", "tags": [] },
             { "title": "TikTok", "url": "https://www.tiktok.com", "description": "Entretenimiento", "tags": [] },
             { "title": "Reddit", "url": "https://www.reddit.com", "description": "Red Social", "tags": [] },
-            { "title": "X", "url": "https://www.x.com", "description": "Red social", "tags": [] },
+            { "title": "X", "url": "https://x.com", "description": "Red social", "tags": [] },
             { "title": "Facebook", "url": "https://www.facebook.com", "description": "Red social", "tags": [] },
             // Agrega más de esta categoría aquí...
         ],
