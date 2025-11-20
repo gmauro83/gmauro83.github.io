@@ -1,136 +1,116 @@
 <!DOCTYPE html>
-<html lang="es"> <head>
+<html lang="es" data-theme="dark">
+<head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Favoritos ✨</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Launchpad AI 🚀</title>
+    
     <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="style.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class', // Habilita el modo oscuro
-            theme: {
-                extend: {
-                    // Color de acento
-                    colors: {
-                        accent: {
-                            500: '#3b82f6', // azul-500
-                            600: '#2563eb', // azul-600
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-
 </head>
-<body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 min-h-screen p-4 md:p-8 transition-colors duration-200 antialiased">
+<body>
+    <div class="bg-animate"></div>
 
-    <div class="max-w-4xl mx-auto">
-
-        <header class="mb-10">
-            <div class="flex justify-between items-center mb-6">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Favoritos</h1>
-                <div class="flex gap-2">
-                    <button id="add-link-btn" class="flex items-center gap-1.5 bg-accent-500 hover:bg-accent-600 text-white font-medium py-2 px-3.5 rounded-lg transition-all text-sm">
-                        <ion-icon name="add-outline" class="text-xl"></ion-icon>
-                        Enlace
-                    </button>
-                    <button id="add-category-btn" class="flex items-center gap-1.5 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-medium py-2 px-3.5 rounded-lg transition-all text-sm">
-                        <ion-icon name="duplicate-outline" class="text-lg"></ion-icon>
-                        Categoría
-                    </button>
-                </div>
+    <div class="container">
+        <header class="glass-header">
+            <div class="top-right-actions">
+                <button id="theme-toggle" class="btn-icon-sm" title="Cambiar Tema"><ion-icon name="moon-outline"></ion-icon></button>
+                <button id="btn-key-gemini" class="btn-icon-sm" title="Key Gemini" style="color:#4b90ff"><ion-icon name="sparkles"></ion-icon></button>
+                <button id="btn-key-pplx" class="btn-icon-sm" title="Key Perplexity" style="color:#22bfa5"><ion-icon name="bulb-outline"></ion-icon></button>
+                <button id="btn-add" class="btn-icon-sm" title="Nuevo Enlace"><ion-icon name="add-outline"></ion-icon></button>
             </div>
 
-            <div class="flex flex-col md:flex-row gap-3">
-                <div class="relative flex-grow">
-                    <input type="search" id="search-input" placeholder="Buscar en todos los enlaces..." class="w-full p-3 pl-10 bg-gray-100 dark:bg-gray-800 border border-transparent focus:border-accent-500 dark:border-transparent dark:focus:border-accent-500 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500/50 transition-colors">
-                    <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                        <ion-icon name="search-outline" class="text-gray-500 dark:text-gray-400"></ion-icon>
+            <div class="logo-area">
+                <h1><ion-icon name="rocket" class="sparkle-icon"></ion-icon> Launchpad AI</h1>
+                <p class="subtitle">Tu Segundo Cerebro</p>
+            </div>
+
+            <form id="prompt-form" class="search-bar">
+                <div class="search-selector">
+                    <select id="search-mode">
+                        <option value="gemini">✨ Gemini</option>
+                        <option value="perplexity">🧠 Perplexity</option>
+                    </select>
+                    <ion-icon name="chevron-down-outline" class="select-icon"></ion-icon>
+                </div>
+                <input type="text" id="prompt-input" placeholder="Pregúntale algo a Gemini..." autocomplete="off">
+                <button type="submit" class="btn-action"><ion-icon name="arrow-forward-outline"></ion-icon></button>
+            </form>
+        </header>
+
+        <main id="categories-container"></main>
+    </div>
+
+    <div id="modal" class="modal hidden">
+        <div class="modal-content glass-panel">
+            <h2 id="modal-title">Enlace</h2>
+            <form id="link-form">
+                <input type="hidden" id="edit-id">
+                
+                <div class="input-group">
+                    <label>Título</label>
+                    <input type="text" id="input-title" required>
+                </div>
+                
+                <div class="input-group">
+                    <label>URL</label>
+                    <input type="url" id="input-url" required>
+                </div>
+
+                <div class="input-group">
+                    <label>Categoría</label>
+                    <div class="category-wrapper">
+                        <select id="input-category-select" class="cat-input">
+                            </select>
+                        
+                        <input type="text" id="input-category-text" class="cat-input hidden" placeholder="Nombre de nueva categoría...">
+                        
+                        <button type="button" id="btn-toggle-cat" class="btn-cat-toggle" title="Crear nueva categoría">
+                            <ion-icon name="add-outline"></ion-icon>
+                        </button>
                     </div>
                 </div>
 
-                <div class="flex gap-2 flex-shrink-0">
-                    <button id="import-btn" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-lg transition-colors flex items-center" title="Importar desde .json">
-                        <ion-icon name="arrow-up-outline" class="text-xl"></ion-icon>
-                    </button>
-                    <button id="export-btn" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-lg transition-colors flex items-center" title="Exportar a .json">
-                        <ion-icon name="arrow-down-outline" class="text-xl"></ion-icon>
-                    </button>
-                    <input type="file" id="import-file" accept=".json" class="hidden">
-                    <button id="theme-toggle-btn" class="bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 font-bold p-3 rounded-lg transition-colors flex items-center" title="Cambiar tema">
-                        <ion-icon name="sunny-outline" class="text-xl"></ion-icon>
-                    </button>
+                <div class="modal-actions">
+                    <button type="button" id="btn-cancel" class="btn-text">Cancelar</button>
+                    <button type="submit" class="btn-primary">Guardar</button>
                 </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="gemini-modal" class="modal hidden">
+        <div class="modal-content glass-panel gemini-panel">
+            <div class="gemini-header">
+                <h2><ion-icon name="sparkles" class="gemini-icon"></ion-icon> Gemini</h2>
+                <button id="close-gemini" class="btn-close"><ion-icon name="close-outline"></ion-icon></button>
             </div>
-        </header>
-
-        <main id="categories-container" class="space-y-10">
-            </main>
-    </div>
-
-    <div id="category-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <h2 id="category-modal-title" class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Crear Nueva Categoría</h2>
-            <form id="category-form">
-                <div>
-                    <label for="category-name" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Nombre de la Categoría</label>
-                    <input type="text" id="category-name" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: Herramientas de Diseño" required>
-                </div>
-                <div id="category-error" class="text-red-500 dark:text-red-400 text-sm mt-2 hidden"></div>
-                <div class="flex justify-end gap-4 mt-6">
-                    <button type="button" class="modal-close-btn bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Guardar</button>
-                </div>
+            <div id="gemini-content" class="gemini-response"></div>
+            <form id="gemini-chat-form" class="gemini-footer">
+                <input type="text" id="gemini-chat-input" placeholder="Chatear con Gemini..." autocomplete="off">
+                <button type="submit" class="btn-gemini-send"><ion-icon name="send"></ion-icon></button>
             </form>
         </div>
     </div>
 
-    <div id="link-modal" class="modal fixed inset-0 bg-black/60 backdrop-blur-sm items-center justify-center z-50 p-4">
-        <div class="bg-white dark:bg-gray-800 p-8 rounded-2xl shadow-2xl w-full max-w-md">
-            <h2 id="link-modal-title" class="text-2xl font-bold mb-6 text-gray-900 dark:text-white">Añadir Nuevo Enlace</h2>
-            <form id="link-form" class="space-y-4">
-                <div>
-                    <label for="link-title" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Título</label>
-                    <input type="text" id="link-title" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: Google" required>
-                </div>
-                <div>
-                    <label for="link-url" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">URL (Enlace)</label>
-                    <input type="text" id="link-url" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: https://www.google.com" required>
-                </div>
-                <div>
-                    <label for="link-description" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Descripción (Opcional)</label>
-                    <textarea id="link-description" rows="2" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: Buscador web rápido y eficiente"></textarea>
-                </div>
-                <div>
-                    <label for="link-tags" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Etiquetas (Opcional, separadas por coma)</label>
-                    <input type="text" id="link-tags" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" placeholder="Ej: busqueda, google, utilidades">
-                </div>
-                <div>
-                    <label for="link-category" class="block text-sm font-medium text-gray-600 dark:text-gray-300 mb-2">Categoría</label>
-                    <select id="link-category" class="w-full p-3 bg-gray-100 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-accent-500" required>
-                    </select>
-                </div>
-                <div id="link-error" class="text-red-500 dark:text-red-400 text-sm pt-2 hidden"></div>
-                <div class="flex justify-end gap-4 pt-4">
-                    <button type="button" class="modal-close-btn bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-600 dark:hover:bg-gray-500 dark:text-white font-bold py-2 px-4 rounded-lg transition-colors">Cancelar</button>
-                    <button type="submit" class="bg-accent-500 hover:bg-accent-600 text-white font-bold py-2 px-4 rounded-lg transition-colors">Guardar</button>
-                </div>
+    <div id="pplx-modal" class="modal hidden">
+        <div class="modal-content glass-panel pplx-panel">
+            <div class="pplx-header">
+                <h2><ion-icon name="bulb" class="pplx-icon"></ion-icon> Perplexity</h2>
+                <button id="close-pplx" class="btn-close"><ion-icon name="close-outline"></ion-icon></button>
+            </div>
+            <div id="pplx-content" class="gemini-response"></div>
+            <form id="pplx-chat-form" class="pplx-footer">
+                <input type="text" id="pplx-chat-input" placeholder="Investigar con Perplexity..." autocomplete="off">
+                <button type="submit" class="btn-pplx-send"><ion-icon name="search"></ion-icon></button>
             </form>
         </div>
     </div>
-
-    <div id="undo-toast" class="fixed bottom-6 left-6 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 p-4 rounded-lg shadow-lg flex items-center gap-4 z-50">
-        <span class="font-medium">Enlace eliminado.</span>
-        <button id="undo-btn" class="font-bold text-accent-400 dark:text-accent-600 hover:text-accent-300 dark:hover:text-accent-500">Deshacer</button>
-    </div>
-
-    <button id="back-to-top-btn" class="hidden fixed bottom-6 right-6 bg-accent-500 hover:bg-accent-600 text-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg transition-opacity duration-300 z-40">
-        <ion-icon name="arrow-up-outline" class="text-2xl"></ion-icon>
-    </button>
 
     <script src="script.js"></script>
 </body>
