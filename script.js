@@ -1,13 +1,51 @@
 document.addEventListener('DOMContentLoaded', () => {
     
-    // DATOS INICIALES (Solo si es nuevo)
-    const defaultData = [
-        { id: 1, title: "Google", url: "https://google.com", category: "BÚSQUEDA Y NOTICIAS" },
-        { id: 2, title: "La Nueva", url: "https://www.lanueva.com/", category: "BÚSQUEDA Y NOTICIAS" },
-        { id: 3, title: "La Brújula 24", url: "https://www.labrujula24.com/", category: "BÚSQUEDA Y NOTICIAS" },
-        { id: 10, title: "ChatGPT", url: "https://chat.openai.com", category: "TECNOLOGÍA Y TRABAJO" },
-        { id: 11, title: "Gemini", url: "https://gemini.google.com", category: "TECNOLOGÍA Y TRABAJO" }
-    ];
+    // --- ¡¡¡TUS DATOS PREDETERMINADOS!!! ---
+            const DEFAULT_BOOKMARKS = {
+                "BÚSQUEDA Y NOTICIAS": [
+                    { "title": "Google", "url": "https://www.google.com", "description": "Buscador", "tags": [] },
+                    { "title": "La Nueva", "url": "https://www.lanueva.com/", "description": "Noticias Locales", "tags": [] },
+                    { "title": "La Brújula 24", "url": "https://www.labrujula24.com", "description": "Noticias Locales", "tags": [] },
+                    { "title": "Infobae", "url": "https://www.infobae.com", "description": "Noticias Nacionales", "tags": [] },
+                    { "title": "Google News", "url": "https://www.news.google.com", "description": "Noticias Nacionales", "tags": [] },
+                    // Agrega más de esta categoría aquí...
+                ],
+                "ENTRETENIMIENTO Y REDES SOCIALES": [
+                    { "title": "Youtube", "url": "https://www.youtube.com", "description": "Videos", "tags": [] },
+                    { "title": "Twitch", "url": "https://www.twitch.tv", "description": "Entretenimiento", "tags": [] },
+                    { "title": "Instagram", "url": "https://www.instagram.com", "description": "Red Social", "tags": [] },
+                    { "title": "TikTok", "url": "https://www.tiktok.com", "description": "Entretenimiento", "tags": [] },
+                    { "title": "Reddit", "url": "https://www.reddit.com", "description": "Red Social", "tags": [] },
+                    { "title": "X", "url": "https://www.x.com", "description": "Red social", "tags": [] },
+                    { "title": "Facebook", "url": "https://www.facebook.com", "description": "Red social", "tags": [] },
+                    // Agrega más de esta categoría aquí...
+                ],
+                "TECNOLOGÍA Y TRABAJO": [
+                    { "title": "ChatGPT", "url": "https://www.chat.openai.com", "description": "IA de OpenAI", "tags": [] },
+                    { "title": "Gemini", "url": "https://www.gemini.google.com", "description": "IA de Google", "tags": [] },
+                    { "title": "Perplexity", "url": "https://www.perplexity.ai", "description": "IA de Perplexity", "tags": [] },
+                    { "title": "Github", "url": "https://www.github.com", "description": "Programación", "tags": [] },
+                    { "title": "Gmail", "url": "https://www.mail.google.com", "description": "Correo", "tags": [] },
+                    { "title": "Calendario de Google", "url": "https://www.calendar.google.com", "description": "Calendario", "tags": [] },
+                    { "title": "Google Drive", "url": "https://www.drive.google.com", "description": "Almacenamiento", "tags": [] },
+                    { "title": "Linkdein", "url": "https://www.linkedin.com", "description": "Trabajo", "tags": [] },
+                    { "title": "Lenguajes Programación", "url": "https://www.lenguajehtml.com", "description": "Programación", "tags": [] },
+                    // Agrega más de esta categoría aquí...
+                ],
+                "DESCARGAS": [
+                    { "title": "MacTorrents", "url": "https://www.torrentmac.net", "description": "Torrent para Mac", "tags": [] },
+                    { "title": "nMac.to", "url": "https://www.nmac.to", "description": "Torrent para Mac", "tags": [] }
+                    // Agrega más de esta categoría aquí...
+                ]
+                // Puedes crear nuevas categorías copiando el bloque entero:
+                // "Mi Nueva Categoría": [ ... ],
+            };
+
+            const DEFAULT_ORDER = [
+                "Búsqueda y Noticias", 
+                "Tecnología y Trabajo"
+            ];
+            // -----------------------------------------------
 
     // DOM
     const categoriesContainer = document.getElementById('categories-container');
